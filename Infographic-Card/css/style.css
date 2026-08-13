@@ -1,0 +1,522 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    font-family:'Poppins',sans-serif;
+    background:#f5f5f5;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow-x:hidden;
+}
+
+/* ===========================
+   CONTAINER
+=========================== */
+
+.container{
+    width:1200px;
+    max-width:95%;
+    text-align:center;
+}
+
+.container h1{
+    font-size:34px;
+    margin-bottom:70px;
+    font-weight:600;
+    color:#222;
+}
+
+/* ===========================
+   CARD GRID
+=========================== */
+
+.cards{
+
+    display:flex;
+    justify-content:center;
+    gap:35px;
+    flex-wrap:wrap;
+    opacity:0;
+    animation:
+    popup .9s forwards,
+    floating 5s ease-in-out infinite;
+}
+
+/* ===========================
+   CARD
+=========================== */
+
+.card{
+    position:relative;
+    width:240px;
+    height:330px;
+    cursor:pointer;
+    transition:.5s;
+}
+
+/* Colored Back Shape */
+
+.shape{
+    position:absolute;
+    right:0;
+    top:0;
+    width:92%;
+    height:100%;
+    border-radius:25px;
+    z-index:1;
+}
+
+/* White Front Card */
+
+.content{
+    position:absolute;
+    left:0;
+    top:0;
+    width:88%;
+    height:100%;
+    background:white;
+    border-radius:22px;
+    box-shadow:
+   0 20px 40px rgba(0,0,0,.18);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    padding:30px;
+    text-align:center;
+    z-index:5;
+    transform:rotate(-5deg);
+    transition:.5s;
+}
+
+/* ===========================
+   ICON
+=========================== */
+
+.content i{
+    font-size:40px;
+    color:#444;
+    margin-bottom:22px;
+}
+
+.content h2{
+    font-size:20px;
+    margin-bottom:15px;
+    color:#222;
+}
+
+.content p{
+    font-size:14px;
+    line-height:24px;
+    color:#777;
+    margin-bottom:35px;
+}
+
+/* ===========================
+   NUMBER
+=========================== */
+
+.content span{
+    width:58px;
+    height:58px;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:white;
+    font-size:20px;
+    font-weight:700;
+}
+
+/* ===========================
+   CARD COLORS
+=========================== */
+
+.blue .shape{
+background:linear-gradient(135deg,#275df6,#6f83ff);
+}
+
+.blue span{
+background:#275df6;
+}
+
+.cyan .shape{
+background:linear-gradient(135deg,#27d2ff,#6ff6ff);
+}
+
+.cyan span{
+background:#27d2ff;
+}
+
+.purple .shape{
+background:linear-gradient(135deg,#7b2fff,#b364ff);
+}
+
+.purple span{
+background:#7b2fff;
+}
+
+.pink .shape{
+
+background:linear-gradient(135deg,#ff2d93,#ff76b7);
+}
+
+.pink span{
+background:#ff2d93;
+}
+
+/* ===========================
+   HOVER
+=========================== */
+
+.card:hover{
+transform:translateY(-15px);
+}
+
+.card:hover .content{
+
+transform:rotate(-3deg)translateY(-12px);
+box-shadow:0 40px 60px rgba(0,0,0,.25);
+}
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+
+@media(max-width:992px){
+
+.cards{
+gap:60px;
+}
+
+}
+
+@media(max-width:768px){
+.container h1{
+font-size:28px;
+margin-bottom:50px;
+}
+
+.card{
+width:220px;
+height:310px;
+}
+}
+
+@media(max-width:500px){
+
+.card{
+width:90%;
+max-width:260px;
+height:320px;
+}
+}
+/*=========================================
+            ANIMATED BACKGROUN
+==========================================*/
+
+body{
+    background:linear-gradient(135deg,#f8f8f8,#f2f5ff,#ffffff,#eef7ff);
+    background-size:400% 400%;
+    animation:bgMove 15s ease infinite;
+    position:relative;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    width:500px;
+    height:500px;
+    background:rgba(80,140,255,.15);
+    border-radius:50%;
+    top:-200px;
+    left:-150px;
+    filter:blur(90px);
+    animation:floatBlob1 10s ease-in-out infinite;
+    z-index:-2;
+}
+
+body::after{
+    
+    content:"";
+    position:fixed;
+    width:450px;
+    height:450px;
+    background:rgba(255,60,170,.13);
+    border-radius:50%;
+    right:-120px;
+    bottom:-180px;
+    filter:blur(90px);
+    animation:floatBlob2 12s ease-in-out infinite;
+    z-index:-2;
+}
+
+/*=========================================
+            CARD FLOAT
+==========================================*/
+
+.card{
+    animation:floating 5s ease-in-out infinite;
+}
+
+.card:nth-child(2){
+    animation-delay:.4s;
+}
+
+.card:nth-child(3){
+    animation-delay:.8s;
+}
+
+.card:nth-child(4){
+    animation-delay:1.2s;
+}
+
+/*=========================================
+          SHINE EFFECT
+==========================================*/
+
+.content{
+
+    overflow:hidden;
+}
+
+.content::before{
+    content:"";
+    position:absolute;
+    width:60%;
+    height:180%;
+    background:rgba(255,255,255,.45);
+    transform:rotate(25deg);
+    left:-120%;
+    top:-30%;
+    transition:1.1s;
+}
+
+.card:hover .content::before{
+
+    left:180%;
+}
+
+/*=========================================
+         GLASS BORDER
+==========================================*/
+
+.content{
+
+    border:1px solid rgba(255,255,255,.5);
+    backdrop-filter:blur(12px);
+}
+
+/*=========================================
+          GLOW SHADOW
+==========================================*/
+
+.card:hover{
+
+    filter:drop-shadow(0 25px 35px rgba(0,0,0,.25));
+}
+
+.blue:hover{
+
+    filter:
+    drop-shadow(0 25px 30px rgba(46,93,255,.45));
+}
+
+.cyan:hover{
+
+    filter:
+    drop-shadow(0 25px 30px rgba(0,225,255,.45));
+}
+
+.purple:hover{
+
+    filter:
+    drop-shadow(0 25px 30px rgba(152,72,255,.45));
+}
+
+.pink:hover{
+
+    filter:
+    drop-shadow(0 25px 30px rgba(255,0,132,.45));
+}
+
+/*=========================================
+          ICON ANIMATION
+==========================================*/
+
+.content i{
+
+    transition:.6s;
+}
+
+.card:hover i{
+
+    transform:
+    rotate(360deg)
+    scale(1.25);
+
+}
+
+/*=========================================
+            NUMBER EFFECT
+==========================================*/
+
+.content span{
+
+    transition:.4s;
+    box-shadow: 0 10px 20px rgba(0,0,0,.18);
+}
+
+.card:hover span{
+
+    transform:scale(1.15);
+    box-shadow: 0 0 20px currentColor, 0 0 45px currentColor;
+}
+
+/*=========================================
+        TITLE EFFECT
+==========================================*/
+
+.content h2{
+    transition:.4s;
+}
+
+.card:hover h2{
+    letter-spacing:2px;
+}
+
+/*=========================================
+        PARAGRAPH
+==========================================*/
+
+.content p{
+    transition:.4s;
+}
+
+.card:hover p{
+    color:#444;
+}
+
+/*=========================================
+        SHAPE GLOW
+==========================================*/
+
+.shape{
+    transition:.5s;
+}
+
+.card:hover .shape{
+    transform:scale(1.03);
+    filter:brightness(1.15);
+}
+
+/*=========================================
+      PAGE LOAD ANIMATION
+==========================================*/
+
+.card{
+
+    opacity:0;
+    animation: popup .9s forwards, floating 5s ease-in-out infinite;
+}
+
+.card:nth-child(1){
+animation-delay:.2s;
+}
+
+.card:nth-child(2){
+animation-delay:.4s;
+}
+
+.card:nth-child(3){
+animation-delay:.6s;
+}
+
+.card:nth-child(4){
+animation-delay:.8s;
+}
+
+/*=========================================
+            KEYFRAMES
+==========================================*/
+
+@keyframes floating{
+
+0%,100%{
+transform:translateY(0px);
+
+}
+
+50%{
+transform:translateY(-12px);
+
+}
+
+}
+
+@keyframes popup{
+
+0%{
+
+opacity:0;
+transform:translateY(80px) scale(.8);
+}
+
+100%{
+
+opacity:1;
+transform:translateY(0) scale(1);
+}
+
+}
+
+@keyframes bgMove{
+
+0%{
+
+background-position:0% 50%;
+
+}
+
+50%{
+background-position:100% 50%;
+}
+
+100%{
+background-position:0% 50%;
+}
+
+}
+
+@keyframes floatBlob1{
+
+0%,100%{
+transform:translate(0,0);
+}
+
+50%{
+transform:translate(60px,50px);
+}
+
+}
+
+@keyframes floatBlob2{
+
+0%,100%{
+transform:translate(0,0);
+}
+
+50%{
+transform:translate(-70px,-40px);
+}
+
+}

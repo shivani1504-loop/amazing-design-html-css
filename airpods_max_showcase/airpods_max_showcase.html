@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maison De Parfum — Luxury Fragrance Carousel</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    font-family: "Montserrat", sans-serif;
+    overflow: hidden;
+    background: #111111;
+}
+
+#backgrounds {
+    position: fixed;
+    inset: 0;
+    z-index: -10;
+    overflow: hidden;
+}
+
+.background {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 1.5s ease, background 1.5s ease;
+}
+
+.background.active {
+    opacity: 1;
+}
+
+/* Background Gradients */
+/* Light & Vibrant Background Gradients (Enhanced Contrast & Glow) */
+
+/* 0: Warm Gold & Soft Beige Glow */
+.bg-0 { background: radial-gradient(circle at 70% 45%, #f5e6d3 0%, #b8916d 35%, #2a1f18 85%); }
+
+/* 1: Rose Quartz & Pastel Pink Glow */
+.bg-1 { background: radial-gradient(circle at 70% 45%, #ffe4e8 0%, #c26d80 35%, #2e1017 85%); }
+
+/* 2: Sunlit Champagne & Warm Amber */
+.bg-2 { background: radial-gradient(circle at 70% 45%, #fff3cf 0%, #cca047 35%, #332208 85%); }
+
+/* 3: Soft Aquamarine & Ice Blue Glow */
+.bg-3 { background: radial-gradient(circle at 70% 45%, #e0f7fa 0%, #54a0a8 35%, #0f2a30 85%); }
+
+/* 4: Soft Lavender & Violet Glow */
+.bg-4 { background: radial-gradient(circle at 70% 45%, #f3e8ff 0%, #9362cd 35%, #220f38 85%); }
+
+/* 5: Fresh Mint & Soft Sage Green */
+.bg-5 { background: radial-gradient(circle at 70% 45%, #e6f4ea 0%, #4ea878 35%, #0c2b1a 85%); }
+
+/* 6: Peach Chiffon & Coral Sunset */
+.bg-6 { background: radial-gradient(circle at 70% 45%, #ffeada 0%, #d97855 35%, #361408 85%); }
+
+/* 7: Platinum Pearl & Silver Mist */
+.bg-7 { background: radial-gradient(circle at 70% 45%, #f1f5f9 0%, #8292a6 35%, #1e2530 85%); }
+
+/* 8: Soft Blush & Ruby Rose Glow */
+.bg-8 { background: radial-gradient(circle at 70% 45%, #ffe4ec 0%, #cb4d75 35%, #330d1b 85%); }
+
+/* 9: Creamy Vanilla & Honey Amber */
+.bg-9 { background: radial-gradient(circle at 70% 45%, #fffbeb 0%, #cfa030 35%, #302106 85%); }
+/* =========================================================
+   MAIN LAYOUT
+========================================================= */
+.slider-main {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    position: relative;
+    overflow: hidden;
+}
+
+/* LEFT CONTENT */
+.slider-content-wrap {
+    width: 45%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    padding-left: 8%;
+    padding-right: 20px;
+    position: relative;
+    z-index: 20;
+}
+
+.container {
+    width: 100%;
+    max-width: 520px;
+}
+
+/* BRAND LOGO */
+.logo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 35px;
+}
+
+.logo svg {
+    width: 36px;
+    height: 36px;
+    fill: #ffffff;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,.25));
+}
+
+.brand-text {
+    margin-left: 14px;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* HEADING */
+.heading-style-2 {
+    max-width: 500px;
+    color: #ffffff;
+    font-size: clamp(32px, 3.2vw, 48px);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -1.2px;
+    margin-bottom: 22px;
+    text-shadow: 0 5px 30px rgba(0,0,0,.2);
+}
+
+/* DESCRIPTION */
+.description {
+    max-width: 460px;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 15px;
+    line-height: 1.55;
+    font-weight: 400;
+    margin-bottom: 30px;
+    letter-spacing: .2px;
+}
+
+/* PRICE */
+.price-label {
+    margin-bottom: 36px;
+}
+
+.price-amount {
+    color: #ffffff;
+    font-size: 38px;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+/* SOCIAL ICONS */
+.social-icons {
+    display: flex;
+    gap: 16px;
+}
+
+.social-icon {
+    width: 52px;
+    height: 52px;
+    border: 1.5px solid rgba(255,255,255,.7);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform .35s ease, background .35s ease;
+}
+
+.social-icon:hover {
+    transform: translateY(-4px) scale(1.05);
+    background: rgba(255,255,255,.15);
+}
+
+.social-icon svg {
+    width: 22px;
+    height: 22px;
+    stroke: #ffffff;
+    fill: none;
+    stroke-width: 1.8;
+}
+
+/* =========================================================
+   RIGHT CAROUSEL AREA
+========================================================= */
+.slider-images {
+    width: 55%;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wheel {
+    position: absolute;
+    width: 900px;
+    height: 1250px;
+    right: -150px; /* Shifted right for proper visibility */
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+/* PERFUME BOTTLE IMAGES */
+.slider-image {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 240px;
+    height: 320px;
+    object-fit: cover; /* Rectangle box fill karne ke liye */
+    border-radius: 20px; /* Clean rounded corners */
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    
+    transform-origin: center center;
+    opacity: 0;
+    filter: blur(8px) brightness(.6);
+    transition: left 1.25s cubic-bezier(.22,.61,.36,1),
+                top 1.25s cubic-bezier(.22,.61,.36,1),
+                width 1.25s cubic-bezier(.22,.61,.36,1),
+                height 1.25s cubic-bezier(.22,.61,.36,1),
+                opacity 1.25s ease,
+                filter 1.25s ease,
+                transform 1.25s cubic-bezier(.22,.61,.36,1);
+    will-change: left, top, transform, opacity;
+}
+
+/* ACTIVE BOTTLE CARD */
+.slider-image.active {
+    width: 320px;
+    height: 440px;
+    border-radius: 24px;
+    opacity: 1;
+    filter: blur(0) brightness(1);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+    z-index: 20;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* WHEEL GLOW */
+.slider-images::before {
+    content: "";
+    position: absolute;
+    width: 500px;
+    height: 600px;
+    right: 50px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: radial-gradient(ellipse, rgba(255,255,255,.15), transparent 70%);
+    filter: blur(40px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* HIDE SCROLLBARS */
+html, body, .slider-main, .slider-images, .slider-content-wrap {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
+</style>
+</head>
+
+<body>
+
+<!-- BACKGROUNDS -->
+<div id="backgrounds">
+    <div class="background bg-0 active"></div>
+    <div class="background bg-1"></div>
+    <div class="background bg-2"></div>
+    <div class="background bg-3"></div>
+    <div class="background bg-4"></div>
+    <div class="background bg-5"></div>
+    <div class="background bg-6"></div>
+    <div class="background bg-7"></div>
+    <div class="background bg-8"></div>
+    <div class="background bg-9"></div>
+</div>
+
+<!-- MAIN CONTENT -->
+<section class="slider-main">
+
+    <div class="slider-content-wrap">
+        <div class="container">
+
+            <!-- BRAND LOGO -->
+            <div class="logo">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                <span class="brand-text">Maison De Parfum</span>
+            </div>
+
+            <!-- HEADING -->
+            <h2 class="heading-style-2">
+                Elegance In Every Single Drop.
+            </h2>
+
+            <!-- DESCRIPTION -->
+            <p class="description">
+                Crafted by master perfumers using rare botanicals, exotic spices, and pure floral essences. Experience pure luxury and unforgettable warmth.
+            </p>
+
+            <!-- PRICE -->
+            <div class="price-label">
+                <span class="price-amount">$245.00</span>
+            </div>
+
+            <!-- SOCIAL -->
+            <div class="social-icons">
+                <div class="social-icon">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+                </div>
+                <div class="social-icon">
+                    <svg viewBox="0 0 24 24" fill="white" stroke="none">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                    </svg>
+                </div>
+                <div class="social-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2s9 5 20 5a9.5 9.5 0 00-9-5.5c4.75-2.63 7-5 7-5s-1.08.95-3 1.7V3z"/>
+                    </svg>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- RIGHT CAROUSEL WITH 10 TRANSPARENT PERFUME BOTTLES -->
+    <div class="slider-images">
+        <div class="wheel">
+            <!-- 10 Transparent Perfume PNGs -->
+            <img class="slider-image active" src="https://i.pinimg.com/736x/a2/11/52/a21152d4f609c31e09bde7d8b2d27253.jpg" alt="Perfume 1">
+            <img class="slider-image" src="https://i.pinimg.com/1200x/f0/1a/24/f01a247751b685490bba0d1f4c054ad6.jpg" alt="Perfume 2">
+            <img class="slider-image" src="https://i.pinimg.com/736x/b1/48/99/b148993100586a1acbb5bef50288df75.jpg" alt="Perfume 3">
+            <img class="slider-image" src="https://i.pinimg.com/736x/ee/7c/d1/ee7cd1fffe419103ff2746fea339c830.jpg" alt="Perfume 4">
+            <img class="slider-image" src="https://i.pinimg.com/736x/5a/42/a6/5a42a665f533020ed45861aa3111addb.jpg" alt="Perfume 5">
+            <img class="slider-image" src="https://i.pinimg.com/1200x/80/39/3a/80393a204ddc87aac020fbb264ffe98b.jpg" alt="Perfume 6">
+            <img class="slider-image" src="https://i.pinimg.com/736x/01/b6/58/01b65825300a32c0abf8a44ebc96a85a.jpg" alt="Perfume 7">
+            <img class="slider-image" src="https://i.pinimg.com/736x/4e/e1/ba/4ee1babe170d849d960b4b3f602054d5.jpg" alt="Perfume 8">
+            <img class="slider-image" src="https://i.pinimg.com/736x/47/e7/7b/47e77b9c11db35c0ad64ee95be98bec3.jpg" alt="Perfume 9">
+            <img class="slider-image" src="https://i.pinimg.com/1200x/5c/42/15/5c4215663e008f2b5426a86a46adc9ca.jpg" alt="Perfume 10">
+        </div>
+    </div>
+
+</section>
+
+<script>
+const images = document.querySelectorAll(".slider-image");
+const backgrounds = document.querySelectorAll(".background");
+
+let currentIndex = 0;
+let autoRotate;
+let isAnimating = false;
+
+/* 7 Visible Arc Positions for 10 Items Carousel */
+const positions = [
+    { y: -420, x: -50, scale: .55, opacity: .25, blur: 8 },
+    { y: -270, x: -120, scale: .68, opacity: .48, blur: 5 },
+    { y: -135, x: -180, scale: .82, opacity: .70, blur: 3 },
+    { y: 0,    x: -200, scale: 1,   opacity: 1,   blur: 0 }, /* Active position */
+    { y: 135,  x: -180, scale: .82, opacity: .70, blur: 3 },
+    { y: 270,  x: -120, scale: .68, opacity: .48, blur: 5 },
+    { y: 420,  x: -50, scale: .55, opacity: .25, blur: 8 }
+];
+
+function updateSlider() {
+    images.forEach((image, index) => {
+        image.className = "slider-image";
+
+        let relative = (index - currentIndex + images.length) % images.length;
+
+        if (relative > Math.floor(images.length / 2)) {
+            relative -= images.length;
+        }
+
+        const positionIndex = relative + 3;
+
+        if (positionIndex >= 0 && positionIndex < positions.length) {
+            const position = positions[positionIndex];
+
+            image.style.left = `calc(50% + ${position.x}px)`;
+            image.style.top = `calc(50% + ${position.y}px)`;
+            image.style.opacity = position.opacity;
+            image.style.filter = `blur(${position.blur}px) brightness(${positionIndex === 3 ? 1 : .65})`;
+            image.style.transform = `translate(-50%, -50%) scale(${position.scale})`;
+
+            if (positionIndex === 3) {
+                image.classList.add("active");
+                image.style.zIndex = 20;
+            } else {
+                image.style.zIndex = 10 - Math.abs(positionIndex - 3);
+            }
+        } else {
+            image.style.opacity = 0;
+            image.style.left = "50%";
+            image.style.top = "50%";
+            image.style.transform = "translate(-50%, -50%) scale(.3)";
+            image.style.filter = "blur(15px)";
+            image.style.zIndex = 0;
+        }
+    });
+
+    backgrounds.forEach(bg => bg.classList.remove("active"));
+    if (backgrounds[currentIndex]) {
+        backgrounds[currentIndex].classList.add("active");
+    }
+}
+
+function nextSlide() {
+    if (isAnimating) return;
+    isAnimating = true;
+    currentIndex = (currentIndex + 1) % images.length;
+    updateSlider();
+    setTimeout(() => { isAnimating = false; }, 1200);
+}
+
+function previousSlide() {
+    if (isAnimating) return;
+    isAnimating = true;
+    currentIndex = (currentIndex - 1 + images.length) % images.length;
+    updateSlider();
+    setTimeout(() => { isAnimating = false; }, 1200);
+}
+
+function startAutoRotate() {
+    clearInterval(autoRotate);
+    autoRotate = setInterval(() => { nextSlide(); }, 4500);
+}
+
+document.querySelector(".slider-images").addEventListener("click", function(event) {
+    const rect = this.getBoundingClientRect();
+    const y = event.clientY - rect.top;
+    if (y < rect.height / 2) previousSlide();
+    else nextSlide();
+    startAutoRotate();
+});
+
+document.addEventListener("keydown", function(event) {
+    if (event.key === "ArrowDown") { nextSlide(); startAutoRotate(); }
+    if (event.key === "ArrowUp") { previousSlide(); startAutoRotate(); }
+});
+
+updateSlider();
+startAutoRotate();
+</script>
+
+</body>
+</html>

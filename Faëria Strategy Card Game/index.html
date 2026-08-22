@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faëria - The Strategy Card & Living Board Game</title>
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Philosopher:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- MAGICAL PARTICLE CANVAS BACKGROUND -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- TOP UTILITY BAR -->
+    <div class="top-bar">
+        <div class="top-bar-container">
+            <div class="top-left">
+                <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i> Facebook</a>
+                <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i> Twitter</a>
+                <a href="#support" class="nav-trigger" data-target="page-support">SUPPORT</a>
+            </div>
+            <div class="top-right">
+                <a href="#signin" class="btn-signin" id="openSignIn">SIGN IN</a>
+                <select class="lang-select">
+                    <option value="en">ENGLISH</option>
+                    <option value="fr">FRANÇAIS</option>
+                    <option value="de">DEUTSCH</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN NAVBAR (WITH SPA ROUTING) -->
+    <nav class="main-navbar">
+        <div class="nav-container">
+            <a href="#home" class="nav-link active nav-trigger" data-target="page-home">Accueil</a>
+            <a href="#news" class="nav-link nav-trigger" data-target="page-news">News</a>
+            <a href="#thegame" class="nav-link nav-trigger" data-target="page-thegame">The game</a>
+            <a href="#ourteam" class="nav-link nav-trigger" data-target="page-ourteam">Our team</a>
+            <a href="#community" class="nav-link nav-trigger" data-target="page-community">Community</a>
+        </div>
+    </nav>
+
+    <!-- PAGE CONTAINER FOR SPA ROUTING -->
+    <div id="app-viewport">
+
+        <!-- ================= PAGE 1: HOME PAGE ================= -->
+        <div id="page-home" class="spa-page active-page">
+            
+            <!-- HERO SECTION -->
+            <header class="hero-section">
+                <div class="hero-container">
+                    <div class="hero-text animate-on-scroll">
+                        <h1 class="game-logo">Faëria</h1>
+                        <p class="subtitle">STRATEGY CARD GAME</p>
+                        <button class="btn-gold-glow scroll-to-beta">BETA SIGN-UP</button>
+                    </div>
+
+                    <div class="trailer-box" id="openVideo" data-video="ndgC2Zf-eK8">
+                        <div class="card-fan-art">
+                            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80" alt="Faëria Cards Fan Art" class="fan-img">
+                            <div class="glow-overlay"></div>
+                        </div>
+                        <div class="play-btn-wrapper">
+                            <div class="play-icon-pulse"><i class="fas fa-play"></i></div>
+                            <span class="watch-text">WATCH<br>THE TRAILER</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- SECTION 1: WHAT'S FAERIA? (ADVANCED 3D TILT CARDS) -->
+            <section class="info-section">
+                <div class="section-container">
+                    <div class="cards-3d-deck animate-on-scroll">
+                        <div class="tilt-card c1" data-card="LURKING ORC">
+                            <img src="https://i.pinimg.com/736x/76/6e/cd/766ecdd73174f6c2ccdd6066ed619998.jpg" alt="Faëria Creature Card 1">
+                            <div class="card-glow"></div>
+                        </div>
+                        <div class="tilt-card c2" data-card="ANCIENT DRAGON">
+                            <img src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=400&q=80" alt="Faëria Spell Card 2">
+                            <div class="card-glow"></div>
+                        </div>
+                        <div class="tilt-card c3 active-card" data-card="KOBOLD ARCHITECT">
+                            <div class="card-badge">KOBOLD ARCHITECT</div>
+                            <img src="https://i.pinimg.com/1200x/b8/da/0e/b8da0e69da666563dff03c2be60e83fe.jpg" alt="Kobold Architect Featured Card">
+                            <!-- <div class="card-stats">
+                                <span class="stat attack">1</span>
+                                <span class="stat cost">2</span>
+                                <span class="stat defense">2</span>
+                            </div> -->
+                            <div class="card-glow"></div>
+                        </div>
+                    </div>
+
+                    <div class="info-text animate-on-scroll">
+                        <h2>What's<br><span class="gold-text">Faëria?</span></h2>
+                        <p>Faëria is a blend of Collectible Card Game and Board Game. Build custom decks and shape the living battlefield with magical lands.</p>
+                        <p class="small-text">It's currently developed for PC, Mac and Linux.</p>
+                        <a href="#thegame" class="learn-link nav-trigger" data-target="page-thegame"><i class="fas fa-long-arrow-alt-right"></i> LEARN MORE ABOUT THE GAME</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: HOW TO PLAY? -->
+            <section class="gameplay-section">
+                <div class="section-container">
+                    <div class="info-text animate-on-scroll">
+                        <h2>How to<br><span class="gold-text">play?</span></h2>
+                        <p>Deploy mountains, forests, deserts, and lakes to summon legendary creatures. Master positional strategy on an interactive hex grid battlefield.</p>
+                        <a href="#thegame" class="learn-link nav-trigger" data-target="page-thegame"><i class="fas fa-long-arrow-alt-right"></i> CHECK THE GAME FEATURES</a>
+                    </div>
+
+                    <div class="board-screen-container video-trigger animate-on-scroll" data-video="ndgC2Zf-eK8">
+                        <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=700&q=80" alt="Gameplay Preview" class="board-preview-img">
+                        <div class="play-btn-circle"><i class="fas fa-play"></i></div>
+                        <div class="hover-scanlines"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MAIN GAME BOARD INTERACTIVE SLIDER -->
+            <section class="main-board-section">
+                <img src="https://pngimg.com/uploads/goblin/goblin_PNG27.png" alt="Ogre Creature Art" class="ogre-monster">
+
+                <div class="board-slider-wrapper animate-on-scroll">
+                    <div class="slider-controls">
+                        <button class="slide-btn" id="prevSlide"><i class="fas fa-chevron-left"></i> PREV</button>
+                        <div class="turn-counter">
+                            <span class="turn-num" id="slideNum">18</span>
+                        </div>
+                        <button class="slide-btn" id="nextSlide">NEXT &gt;</button>
+                    </div>
+
+                    <div class="main-screen-frame">
+                        <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80" alt="Faëria Living Board" id="sliderImg">
+                        <div class="board-glow-effect"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- BETA SIGN-UP FOOTER SECTION -->
+            <section class="footer-signup animate-on-scroll">
+                <div class="footer-container">
+                    <h2><span class="gold-text">Beta</span> Sign-up</h2>
+                    <p>Leave us your email and get a chance to test the game before everybody else.</p>
+                    
+                    <form class="signup-form" id="betaForm">
+                        <input type="email" placeholder="Your e-mail address" required id="emailInput">
+                        <button type="submit" class="btn-send">SEND</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+
+        <!-- ================= PAGE 2: NEWS PAGE ================= -->
+        <div id="page-news" class="spa-page">
+            <div class="page-header">
+                <h2>LATEST <span class="gold-text">NEWS & UPDATES</span></h2>
+                <p>Stay updated with the latest patches, beta releases, and card reveals.</p>
+            </div>
+            <div class="section-container grid-3">
+                <div class="news-card">
+                    <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=500&q=80" alt="Patch Notes">
+                    <div class="news-content">
+                        <span class="date">AUGUST 20, 2026</span>
+                        <h3>Closed Beta Phase 2 Launch</h3>
+                        <p>We are opening servers for 5,000 new strategy enthusiasts. Check your emails for beta keys!</p>
+                        <a href="#" class="read-more">Read Patch Notes &rarr;</a>
+                    </div>
+                </div>
+                <div class="news-card">
+                    <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=500&q=80" alt="Card Reveal">
+                    <div class="news-content">
+                        <span class="date">AUGUST 12, 2026</span>
+                        <h3>New Biome Revealed: Ignis Deserts</h3>
+                        <p>Discover how heat elements transform hex lands and grant movement agility to fire elemental creatures.</p>
+                        <a href="#" class="read-more">Read Article &rarr;</a>
+                    </div>
+                </div>
+                <div class="news-card">
+                    <img src="https://i.pinimg.com/736x/25/97/dc/2597dc297b377d871f176a3aec084fc3.jpg" alt="Tournament">
+                    <div class="news-content">
+                        <span class="date">JULY 28, 2026</span>
+                        <h3>Faëria Invitational Masters</h3>
+                        <p>Watch 16 top CCG esports players battle on the living board for a $10,000 prize pool.</p>
+                        <a href="#" class="read-more">Watch Replays &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PAGE 3: THE GAME ================= -->
+        <div id="page-thegame" class="spa-page">
+            <div class="page-header">
+                <h2>THE LIVING <span class="gold-text">BOARD MECHANICS</span></h2>
+                <p>A unique fusion of strategic tactical positioning and rich card lore.</p>
+            </div>
+            <div class="section-container game-features">
+                <div class="feature-row">
+                    <div class="feature-img-box">
+                        <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80" alt="Shape Battlefield">
+                    </div>
+                    <div class="feature-detail">
+                        <h3>Build the World as You Play</h3>
+                        <p>Unlike traditional card games, Faëria lets you shape the board. Place tiles to create ocean routes, mountain passes, or dark forests directly influencing minion paths.</p>
+                    </div>
+                </div>
+                <div class="feature-row reverse">
+                    <div class="feature-img-box">
+                        <img src="https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=600&q=80" alt="Deck Building">
+                    </div>
+                    <div class="feature-detail">
+                        <h3>Deep Deck Customization</h3>
+                        <p>Collect over 300 unique fantasy cards with dynamic creature abilities, spell synergies, and game-changing relics.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PAGE 4: OUR TEAM ================= -->
+        <div id="page-ourteam" class="spa-page">
+            <div class="page-header">
+                <h2>MEET THE <span class="gold-text">CREATORS</span></h2>
+                <p>The passionate developers and artists behind Abrakam Studio.</p>
+            </div>
+            <div class="section-container team-grid">
+                <div class="team-card">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" alt="Lead Designer">
+                    <h3>Jean-Michel</h3>
+                    <span class="role">Lead Game Designer</span>
+                    <p>Passionate about board game mechanics and competitive balance.</p>
+                </div>
+                <div class="team-card">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80" alt="Art Director">
+                    <h3>David Laurent</h3>
+                    <span class="role">Art Director</span>
+                    <p>Crafting fantasy landscapes and living card illustrations.</p>
+                </div>
+                <div class="team-card">
+                    <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=300&q=80" alt="Senior Engineer">
+                    <h3>Sarah Jenkins</h3>
+                    <span class="role">Lead Network Engineer</span>
+                    <p>Ensuring ultra-fast, smooth multiplayer turn calculations.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PAGE 5: COMMUNITY ================= -->
+        <div id="page-community" class="spa-page">
+            <div class="page-header">
+                <h2>JOIN THE <span class="gold-text">FAËRIA COMMUNITY</span></h2>
+                <p>Connect with thousands of players, share deck guides, and participate in events.</p>
+            </div>
+            <div class="section-container community-box">
+                <div class="comm-card">
+                    <i class="fab fa-discord comm-icon"></i>
+                    <h3>Official Discord</h3>
+                    <p>Over 25,000 active tacticians waiting for custom friendly matches.</p>
+                    <button class="btn-gold-glow">Join Discord</button>
+                </div>
+                <div class="comm-card">
+                    <i class="fab fa-reddit-alien comm-icon"></i>
+                    <h3>Subreddit</h3>
+                    <p>Discuss meta strategies, fan art, and balance suggestions with devs.</p>
+                    <button class="btn-gold-glow">Visit Subreddit</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PAGE 6: SUPPORT ================= -->
+        <div id="page-support" class="spa-page">
+            <div class="page-header">
+                <h2>PLAYER <span class="gold-text">SUPPORT</span></h2>
+                <p>Having trouble? Our wizarding support team is here to assist you.</p>
+            </div>
+            <div class="section-container support-form-wrapper">
+                <form class="support-form" id="supportForm">
+                    <div class="form-group">
+                        <label>YOUR NAME</label>
+                        <input type="text" required placeholder="Enter name">
+                    </div>
+                    <div class="form-group">
+                        <label>EMAIL ADDRESS</label>
+                        <input type="email" required placeholder="Enter email">
+                    </div>
+                    <div class="form-group">
+                        <label>MESSAGE / ISSUE</label>
+                        <textarea rows="5" required placeholder="Describe your issue..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-gold-glow">SUBMIT TICKET</button>
+                </form>
+            </div>
+        </div>
+
+    </div> <!-- END APP-VIEWPORT -->
+
+    <!-- FOOTER -->
+    <footer class="main-footer">
+        <div class="footer-bottom">
+            <div class="footer-logo">
+                <h3>Faëria</h3>
+                <p>STRATEGY CARD GAME</p>
+            </div>
+            <div class="hex-grid-decoration">
+                <div class="hex"></div>
+                <div class="hex"></div>
+                <div class="hex"></div>
+                <div class="hex"></div>
+                <div class="hex"></div>
+            </div>
+            <div class="footer-links">
+                <a href="#support" class="nav-trigger" data-target="page-support">Support</a> | 
+                <a href="#">Privacy Policy</a> | 
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+        <p class="copyright">© 2026 Abrakam S.A. All rights reserved.</p>
+    </footer>
+
+    <!-- LIGHTBOX VIDEO MODAL -->
+    <div class="video-modal" id="videoModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeVideo">&times;</span>
+            <div class="iframe-container">
+                <iframe id="youtubeIframe" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIGN IN MODAL -->
+    <div class="video-modal" id="loginModal">
+        <div class="modal-content auth-box">
+            <span class="close-modal" id="closeLogin">&times;</span>
+            <h2>ACCOUNT <span class="gold-text">LOGIN</span></h2>
+            <form id="loginForm" class="auth-form">
+                <input type="text" placeholder="Username / Email" required>
+                <input type="password" placeholder="Password" required>
+                <button type="submit" class="btn-gold-glow">ENTER BATTLE</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Antiques - Vintage Investment Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Rozha+One&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Global Variables & Palette */
+    :root {
+      --bg-color: #f2ebd9;
+      --paper-bg: #f5eedc;
+      --paper-border: #c8b693;
+      --paper-dark-border: #8c7355;
+      --text-dark: #3b2a1a;
+      --text-muted: #6b533e;
+      --accent-brown: #5c3d2e;
+      --gold: #b8860b;
+      --gold-light: #d4af37;
+      --dark-btn: #382d21;
+      --dark-btn-hover: #544332;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      background-image: 
+        radial-gradient(circle at 50% 30%, rgba(255,255,255,0.7) 0%, rgba(210,190,150,0.35) 70%),
+        repeating-linear-gradient(45deg, rgba(60, 40, 20, 0.025) 0px, rgba(60, 40, 20, 0.025) 2px, transparent 2px, transparent 5px);
+      color: var(--text-dark);
+      font-family: 'Playfair Display', Georgia, serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px 10px 60px 10px;
+      overflow-x: hidden;
+    }
+
+    /* Container Wrapper */
+    .wrapper {
+      width: 100%;
+      max-width: 960px;
+      position: relative;
+      padding: 10px;
+    }
+
+    /* Floating Vintage Side Props (SVG Illustrations) */
+    .side-prop {
+      position: absolute;
+      pointer-events: none;
+      z-index: 12;
+      filter: drop-shadow(4px 8px 12px rgba(40, 25, 10, 0.35));
+    }
+
+    /* Left Skeleton Key */
+    .prop-key {
+      top: 260px;
+      left: -75px;
+      width: 100px;
+      transform: rotate(-28deg);
+      animation: gentleSway 7s ease-in-out infinite alternate;
+    }
+
+    /* Right Pocket Watch */
+    .prop-clock {
+      top: 520px;
+      right: -75px;
+      width: 110px;
+      animation: floatClock 6s ease-in-out infinite;
+    }
+
+    /* Compasses / Sundial prop lower left */
+    .prop-compass {
+      bottom: 220px;
+      left: -70px;
+      width: 95px;
+      transform: rotate(12deg);
+    }
+
+    @keyframes floatClock {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-14px) rotate(5deg); }
+    }
+
+    @keyframes gentleSway {
+      0% { transform: rotate(-28deg) translateY(0); }
+      100% { transform: rotate(-22deg) translateY(-8px); }
+    }
+
+    /* Parchment Paper Box Styling with Authentic Shadows & Vintage Borders */
+    .parchment-box {
+      background: var(--paper-bg);
+      background-image: radial-gradient(circle at center, #fbf6eb 0%, #efe5cd 100%);
+      border: 1px solid var(--paper-border);
+      border-radius: 4px;
+      box-shadow: 
+        0 10px 25px rgba(60, 40, 20, 0.18),
+        inset 0 0 45px rgba(180, 150, 100, 0.35),
+        inset 0 0 10px rgba(0, 0, 0, 0.05);
+      position: relative;
+      transition: all 0.35s ease;
+    }
+
+    .parchment-box:hover {
+      box-shadow: 
+        0 15px 32px rgba(60, 40, 20, 0.25),
+        inset 0 0 55px rgba(180, 150, 100, 0.45);
+    }
+
+    /* Top Utility Bar */
+    .top-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 22px;
+      font-size: 13px;
+      margin-bottom: 25px;
+      border-bottom: 2px solid var(--paper-border);
+    }
+    .top-header div {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Header & Logo */
+    .header-center {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .logo {
+      font-family: 'Cinzel Decorative', cursive;
+      font-size: 52px;
+      color: var(--text-dark);
+      text-shadow: 2px 3px 6px rgba(0,0,0,0.15);
+      margin-bottom: 15px;
+      cursor: pointer;
+      letter-spacing: 2px;
+      transition: transform 0.3s;
+    }
+    .logo:hover {
+      transform: scale(1.02);
+    }
+
+    /* Main Navigation Bar */
+    .nav-bar {
+      display: inline-flex;
+      gap: 22px;
+      padding: 12px 35px;
+      border-top: 2px dashed var(--paper-border);
+      border-bottom: 2px dashed var(--paper-border);
+      flex-wrap: wrap;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.25);
+    }
+    .nav-bar a {
+      text-decoration: none;
+      color: var(--text-dark);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 13px;
+      letter-spacing: 1.2px;
+      padding: 4px 8px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+    }
+    .nav-bar a:hover, .nav-bar a.active {
+      color: var(--gold);
+    }
+    .nav-bar a.active::after, .nav-bar a:hover::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: var(--gold);
+    }
+
+    /* Animated Section Visibility */
+    .page-section {
+      display: none;
+      animation: fadeInPage 0.45s ease-out forwards;
+    }
+    .page-section.active {
+      display: block;
+    }
+
+    @keyframes fadeInPage {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hero Centerpiece Banner */
+    .hero-banner {
+      height: 220px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      margin-bottom: 30px;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid var(--paper-border);
+      background: radial-gradient(ellipse at center, rgba(255,255,255,0.9) 0%, rgba(245,238,220,0.4) 80%);
+    }
+
+    /* Vintage Frame Graphic */
+    .hero-frame-bg {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .hero-title {
+      font-family: 'Cinzel Decorative', cursive;
+      font-size: 32px;
+      text-align: center;
+      margin-bottom: 25px;
+      color: var(--accent-brown);
+      text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+    }
+
+    /* Tariff Cards Grid */
+    .tariffs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 18px;
+      margin-bottom: 35px;
+    }
+    .tariff-card {
+      padding: 22px 16px;
+      text-align: center;
+      background: linear-gradient(135deg, #fdfaf3 0%, #eae0c8 100%);
+      cursor: pointer;
+      border: 1px solid var(--paper-border);
+      position: relative;
+      overflow: hidden;
+    }
+    .tariff-card::before {
+      content: '';
+      position: absolute;
+      top: 4px; left: 4px; right: 4px; bottom: 4px;
+      border: 1px dashed rgba(140, 115, 85, 0.4);
+      pointer-events: none;
+    }
+    .tariff-card.selected {
+      border: 2px solid var(--gold);
+      background: linear-gradient(135deg, #fffbf2 0%, #f3e5c8 100%);
+      box-shadow: 0 0 15px rgba(184, 134, 11, 0.3);
+    }
+    .tariff-card h4 {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.85;
+      margin-bottom: 12px;
+      color: var(--accent-brown);
+    }
+    .tariff-percent {
+      font-size: 46px;
+      font-family: 'Rozha One', serif;
+      color: var(--accent-brown);
+      margin-bottom: 10px;
+      text-shadow: 1px 1px 0px rgba(255,255,255,0.9);
+      line-height: 1;
+    }
+    .tariff-details {
+      font-size: 12px;
+      line-height: 1.6;
+      border-top: 1px solid rgba(140, 115, 85, 0.25);
+      padding-top: 12px;
+      color: var(--text-dark);
+      font-weight: 600;
+    }
+
+    /* Profit Calculator Section */
+    .calc-section {
+      padding: 30px 35px;
+      margin-bottom: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 25px;
+      flex-wrap: wrap;
+      position: relative;
+    }
+    .calc-inputs {
+      flex: 1.2;
+      min-width: 280px;
+    }
+    .calc-inputs h3 {
+      font-size: 22px;
+      margin-bottom: 18px;
+      font-family: 'Cinzel Decorative', cursive;
+      color: var(--accent-brown);
+    }
+    .input-group {
+      margin-bottom: 20px;
+    }
+    .input-group label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    .input-group input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent-brown);
+      cursor: pointer;
+      height: 8px;
+      background: var(--paper-border);
+      border-radius: 4px;
+    }
+    .calc-result {
+      text-align: right;
+      padding-right: 20px;
+      flex: 0.8;
+      min-width: 220px;
+    }
+    .calc-result-val {
+      font-size: 44px;
+      font-family: 'Rozha One', serif;
+      color: var(--accent-brown);
+      line-height: 1.1;
+      margin-top: 5px;
+    }
+    
+    /* Buttons */
+    .btn-action {
+      background: var(--dark-btn);
+      color: #f7f2e6;
+      border: 1px solid var(--gold);
+      padding: 12px 28px;
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      border-radius: 2px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+      transition: all 0.3s ease;
+    }
+    .btn-action:hover {
+      background: var(--gold);
+      color: var(--dark-btn);
+      box-shadow: 0 6px 15px rgba(184, 134, 11, 0.4);
+      transform: translateY(-2px);
+    }
+
+    /* Quill Pen (SVG Over Calculator) */
+    .prop-quill {
+      position: absolute;
+      right: -25px;
+      bottom: -30px;
+      width: 120px;
+      transform: rotate(18deg);
+      pointer-events: none;
+      filter: drop-shadow(4px 6px 8px rgba(0,0,0,0.35));
+    }
+
+    /* VIDEO SECTION STYLING (PROPER HIGH-END IMPLEMENTATION) */
+    .video-section {
+      padding: 30px;
+      margin-bottom: 40px;
+    }
+    .video-header {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+    .video-header h3 {
+      font-family: 'Cinzel Decorative', cursive;
+      font-size: 24px;
+      color: var(--accent-brown);
+      margin-bottom: 6px;
+    }
+    .video-header p {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* Video Player Box with Canvas Vintage Frame & Controls */
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      border: 8px solid var(--accent-brown);
+      border-radius: 4px;
+      box-shadow: 
+        0 12px 30px rgba(0,0,0,0.35),
+        inset 0 0 15px rgba(0,0,0,0.5);
+      background: #110d08;
+      overflow: hidden;
+    }
+
+    .video-wrapper video {
+      width: 100%;
+      height: auto;
+      display: block;
+      max-height: 480px;
+      object-fit: cover;
+      background: #000;
+    }
+
+    /* Play Overlay Banner on Video */
+    .video-poster-overlay {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(20, 15, 10, 0.45) radial-gradient(circle, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.75) 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: opacity 0.4s ease;
+      z-index: 5;
+    }
+    .video-poster-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .play-btn-circle {
+      width: 75px;
+      height: 75px;
+      background: rgba(56, 45, 33, 0.85);
+      border: 3px solid var(--gold);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
+      transition: all 0.3s ease;
+    }
+    .play-btn-circle:hover {
+      transform: scale(1.12);
+      background: var(--gold);
+    }
+    .play-btn-circle:hover svg {
+      fill: var(--dark-btn);
+    }
+
+    .video-title-banner {
+      margin-top: 15px;
+      font-family: 'Cinzel Decorative', cursive;
+      color: #f7f2e6;
+      font-size: 18px;
+      text-shadow: 2px 2px 6px rgba(0,0,0,0.9);
+      letter-spacing: 1px;
+    }
+
+    /* Content Panels for Pages */
+    .content-panel {
+      padding: 32px;
+      margin-bottom: 35px;
+      line-height: 1.85;
+    }
+    .content-panel h2 {
+      font-family: 'Cinzel Decorative', cursive;
+      margin-bottom: 18px;
+      color: var(--accent-brown);
+      font-size: 26px;
+      border-bottom: 1px dashed var(--paper-border);
+      padding-bottom: 10px;
+    }
+    .content-panel p {
+      margin-bottom: 16px;
+      font-size: 15px;
+      color: var(--text-dark);
+    }
+
+    /* Payment Gateway Cards */
+    .pay-card {
+      background: rgba(255, 255, 255, 0.5);
+      border: 1px solid var(--paper-border);
+      padding: 22px;
+      border-radius: 4px;
+      margin-top: 20px;
+      box-shadow: inset 0 0 15px rgba(180, 150, 100, 0.2);
+    }
+    .pay-card h3 {
+      font-family: 'Cinzel Decorative', cursive;
+      color: var(--accent-brown);
+      margin-bottom: 12px;
+      font-size: 18px;
+    }
+    .pay-card ul {
+      margin-left: 22px;
+      font-size: 14px;
+      margin-bottom: 18px;
+    }
+    .pay-card li {
+      margin-bottom: 6px;
+    }
+
+    /* Bottom Payment Partners Bar (Interactive Nav) */
+    .payment-bar {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 16px 22px;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 1.2px;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 25px;
+      background: linear-gradient(180deg, #f7f1e3 0%, #ebdcb9 100%);
+    }
+    .payment-bar span {
+      cursor: pointer;
+      padding: 8px 16px;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      transition: all 0.3s ease;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .payment-bar span:hover, .payment-bar span.active-pay {
+      color: var(--gold);
+      background: rgba(56, 45, 33, 0.12);
+      border-color: var(--gold);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      opacity: 0.8;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wrapper">
+
+    <!-- LEFT SIDE PROP 1: VINTAGE SKELETON KEY (SVG) -->
+    <svg class="side-prop prop-key" viewBox="0 0 100 100" fill="none">
+      <circle cx="30" cy="30" r="18" fill="#d9c5a0" stroke="#4a3525" stroke-width="3"/>
+      <circle cx="30" cy="30" r="8" fill="#f2ebd9" stroke="#4a3525" stroke-width="2"/>
+      <line x1="43" y1="43" x2="85" y2="85" stroke="#4a3525" stroke-width="6" stroke-linecap="round"/>
+      <path d="M72 72 L82 62 M80 80 L90 70" stroke="#4a3525" stroke-width="4" stroke-linecap="round"/>
+    </svg>
+
+    <!-- RIGHT SIDE PROP 2: VINTAGE POCKET WATCH (SVG) -->
+    <svg class="side-prop prop-clock" viewBox="0 0 100 100">
+      <circle cx="50" cy="55" r="35" fill="#d3c4a5" stroke="#4a3525" stroke-width="4"/>
+      <circle cx="50" cy="55" r="28" fill="#fffdf7" stroke="#8c7355" stroke-width="2"/>
+      <!-- Ring on top -->
+      <circle cx="50" cy="14" r="8" fill="none" stroke="#4a3525" stroke-width="3"/>
+      <rect x="47" y="20" width="6" height="6" fill="#4a3525"/>
+      <!-- Clock Roman Numerals indicators -->
+      <circle cx="50" cy="32" r="1.5" fill="#3b2a1a"/>
+      <circle cx="50" cy="78" r="1.5" fill="#3b2a1a"/>
+      <circle cx="27" cy="55" r="1.5" fill="#3b2a1a"/>
+      <circle cx="73" cy="55" r="1.5" fill="#3b2a1a"/>
+      <!-- Clock hands -->
+      <line x1="50" y1="55" x2="50" y2="38" stroke="#3b2a1a" stroke-width="3" stroke-linecap="round"/>
+      <line x1="50" y1="55" x2="64" y2="55" stroke="#3b2a1a" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="50" cy="55" r="3" fill="#4a3525"/>
+    </svg>
+
+    <!-- LEFT SIDE PROP 3: ANTIQUE COMPASS (SVG) -->
+    <svg class="side-prop prop-compass" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="38" fill="#d9c5a0" stroke="#4a3525" stroke-width="3"/>
+      <circle cx="50" cy="50" r="32" fill="#faf5e8" stroke="#8c7355" stroke-width="1.5"/>
+      <!-- Compass Star -->
+      <polygon points="50,22 55,45 78,50 55,55 50,78 45,55 22,50 45,45" fill="#8c1c1c"/>
+      <polygon points="50,22 55,45 50,50 45,45" fill="#b8860b"/>
+      <circle cx="50" cy="50" r="4" fill="#3b2a1a"/>
+    </svg>
+
+    <!-- Top Utility Bar -->
+    <div class="parchment-box top-header">
+      <div>🌐 Language: <strong>English (US)</strong></div>
+      <div>📞 Support Hotline: <strong>+1 (800) 555-0199</strong></div>
+    </div>
+
+    <!-- Header & Main Navigation Bar -->
+    <div class="header-center">
+      <h1 class="logo" onclick="showPage('home')">Antiques</h1>
+      <nav class="nav-bar">
+        <a id="nav-home" class="active" onclick="showPage('home')">Home</a>
+        <a id="nav-about" onclick="showPage('about')">About Us</a>
+        <a id="nav-tariffs" onclick="showPage('tariffs')">Tariffs</a>
+        <a id="nav-news" onclick="showPage('news')">News</a>
+        <a id="nav-promotions" onclick="showPage('promotions')">Promotions</a>
+        <a id="nav-contact" onclick="showPage('contact')">Contact Us</a>
+      </nav>
+    </div>
+
+    <!-- ==================== MAIN NAVBAR PAGES ==================== -->
+
+    <!-- PAGE 1: HOME -->
+    <div id="page-home" class="page-section active">
+      
+      <!-- Hero Centerpiece Banner -->
+      <div class="hero-banner parchment-box">
+        <div class="hero-frame-bg">
+          <div style="font-size: 55px; filter: drop-shadow(0 6px 8px rgba(0,0,0,0.25)); margin-bottom: 8px;">🏛️ 🏺 📜</div>
+          <div style="font-family: 'Cinzel Decorative', cursive; font-size: 20px; color: #5c3d2e; font-weight: bold;">
+            Historical Asset Preservation & High Yield Investments
+          </div>
+        </div>
+      </div>
+
+      <h2 class="hero-title">Investment Tariffs</h2>
+
+      <!-- Tariff Plan Cards -->
+      <div class="tariffs-grid">
+        <div class="parchment-box tariff-card" id="card-5" onclick="selectPlan(5, 'card-5')">
+          <h4>Classic Standard</h4>
+          <div class="tariff-percent">5%</div>
+          <div class="tariff-details">
+            Term: 24 Hours<br>
+            Min. Deposit: $1,000
+          </div>
+        </div>
+        <div class="parchment-box tariff-card" id="card-9" onclick="selectPlan(9, 'card-9')">
+          <h4>Classic Silver</h4>
+          <div class="tariff-percent">9%</div>
+          <div class="tariff-details">
+            Term: 24 Hours<br>
+            Min. Deposit: $5,000
+          </div>
+        </div>
+        <div class="parchment-box tariff-card" id="card-14" onclick="selectPlan(14, 'card-14')">
+          <h4>Classic Gold</h4>
+          <div class="tariff-percent">14%</div>
+          <div class="tariff-details">
+            Term: 24 Hours<br>
+            Min. Deposit: $10,000
+          </div>
+        </div>
+        <div class="parchment-box tariff-card" id="card-18" onclick="selectPlan(18, 'card-18')">
+          <h4>Classic Platinum</h4>
+          <div class="tariff-percent">18%</div>
+          <div class="tariff-details">
+            Term: 24 Hours<br>
+            Min. Deposit: $50,000
+          </div>
+        </div>
+      </div>
+
+      <!-- Profit Calculator Container -->
+      <div class="parchment-box calc-section">
+        
+        <!-- QUILL PEN PROP (SVG OVER CALCULATOR) -->
+        <svg class="prop-quill" viewBox="0 0 100 100">
+          <path d="M80 10 C 50 40, 20 70, 10 90 C 25 80, 50 60, 80 10 Z" fill="#8c1c1c"/>
+          <path d="M80 10 C 65 30, 40 55, 20 75" fill="none" stroke="#d4af37" stroke-width="1.5"/>
+          <path d="M10 90 L4 98 L13 93 Z" fill="#2b1a0e"/>
+        </svg>
+
+        <div class="calc-inputs">
+          <h3>Profit Calculator</h3>
+          <div class="input-group">
+            <label for="amountRange">Investment Amount: <strong id="amountVal" style="color:var(--gold); font-size:16px;">$50,000</strong></label>
+            <input type="range" id="amountRange" min="1000" max="200000" step="1000" value="50000" oninput="calculateProfit()">
+          </div>
+          <button class="btn-action" onclick="alert('Proceeding to investment plan setup...')">Invest Now</button>
+        </div>
+
+        <div class="calc-result">
+          <div style="font-size: 13px; text-transform: uppercase; font-weight:700; letter-spacing:1px; color:var(--text-muted);">Expected Net Profit</div>
+          <div class="calc-result-val" id="profitVal">$2,500.00</div>
+        </div>
+      </div>
+
+      <!-- PROPER VIDEO PRESENTATION SECTION -->
+      <div class="parchment-box video-section">
+        <div class="video-header">
+          <h3>Platform Video Presentation</h3>
+          <p>Watch our short introductory video on antique asset authentication & vault security</p>
+        </div>
+
+        <div class="video-wrapper">
+          <!-- Video Element with Poster Frame Image -->
+          <video id="mainPromoVideo" controls poster="https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=1000&q=80">
+            <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+
+          <!-- Custom Vintage Overlay (disappears on click) -->
+          <div class="video-poster-overlay" id="videoOverlay" onclick="playPromoVideo()">
+            <div class="play-btn-circle">
+              <svg width="28" height="32" viewBox="0 0 24 24" fill="#d4af37">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </div>
+            <div class="video-title-banner">Click to Play Overview Presentation</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PAGE 2: ABOUT US -->
+    <div id="page-about" class="page-section">
+      <div class="parchment-box content-panel">
+        <h2>About Antiques Platform</h2>
+        <p>Founded in 2012, Antiques Investment Platform bridges historical asset preservation with modern wealth creation. We specialize in curating, authenticating, and monetizing high-value historical collectibles, fine art, and rare antiquities.</p>
+        <p>Our team of master appraisers and vault security officers ensure that every asset in our portfolio is fully insured and verified for maximum liquidity and growth.</p>
+      </div>
+    </div>
+
+    <!-- PAGE 3: TARIFFS -->
+    <div id="page-tariffs" class="page-section">
+      <div class="parchment-box content-panel">
+        <h2>Investment Plans & Structure</h2>
+        <p>We offer tailored investment options ranging from short-term liquidity pools to museum-grade antique holdings. All tariffs offer guaranteed daily payouts backed by tangible physical reserves.</p>
+      </div>
+    </div>
+
+    <!-- PAGE 4: NEWS -->
+    <div id="page-news" class="page-section">
+      <div class="parchment-box content-panel">
+        <h2>Platform News & Announcements</h2>
+        <p><strong>Aug 20, 2026:</strong> Acquired 18th-century French royal estate furniture collection valued at $2.4M.</p>
+        <p><strong>Jul 14, 2026:</strong> Completed integration of multi-currency instant payout gateways for global investors.</p>
+      </div>
+    </div>
+
+    <!-- PAGE 5: PROMOTIONS -->
+    <div id="page-promotions" class="page-section">
+      <div class="parchment-box content-panel">
+        <h2>Current Promotions</h2>
+        <p>Get up to <strong>+2% yield boost</strong> on initial deposits above $5,000 made through cryptocurrency gateways!</p>
+      </div>
+    </div>
+
+    <!-- PAGE 6: CONTACT US -->
+    <div id="page-contact" class="page-section">
+      <div class="parchment-box content-panel">
+        <h2>Contact Advisory Support</h2>
+        <p>Reach out to our private wealth advisory concierge:</p>
+        <p>📧 Email: <strong>support@antiques-platform.com</strong><br>
+           📞 Direct Desk: <strong>+1 (800) 555-0199</strong><br>
+           🏛️ Vault Location: Zurich, Switzerland
+        </p>
+      </div>
+    </div>
+
+
+    <!-- ==================== BOTTOM PAYMENT GATEWAY NAVBAR PAGES ==================== -->
+
+    <!-- ADV-CASH PAGE -->
+    <div id="page-advcash" class="page-section">
+      <div class="parchment-box content-panel">
+        <h2>AdvCash Payment Gateway</h2>
+        <p>Deposit and withdraw funds instantly using your AdvCash account with zero platform fees.</p>
+        <div class="pay-card">
+          <h3>AdvCash Transfer Details</h3>
+          <ul>
+            <li>Processing Time: <strong>Instant</strong></li>
+            <li>Minimum Deposit: <strong>$100</strong></li>
+            <li>Supported Currencies: <strong>USD, EUR, GBP</strong></li>
+          </ul>
+          <button class="btn-action" onclick="alert('Redirecting to AdvCash Gateway...')">Pay via AdvCash</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BITCOIN PAGE -->
+    <div id="page-bitcoin" class="page-section">
+      <div class="parchment-box content-panel">
+        <h2>Bitcoin (BTC) Crypto Gateway</h2>
+        <p>Invest via Bitcoin for decentralized, high-speed, and secure private transactions.</p>
+        <div class="pay-card">
+          <h3>Bitcoin Deposit Portal</h3>
+          <ul>
+            <li>Confirmation Required: <strong>1 Network Confirmation</strong></li>
+            <li>Minimum Deposit: <strong>0.002 BTC</strong></li>
+            <li>Storage: <strong>Multisig Cold Storage Vault</strong></li>
+          </ul>
+          <button class="btn-action" onclick="alert('Generating Bitcoin Receive Address...')">Get BTC Address</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- OKPAY PAGE -->
+    <div id="page-okpay" class="page-section">
+      <div class="parchment-box content-panel">
+        <h2>OKPAY Gateway</h2>
+        <p>Fast e-wallet transfers directly connected to your verified OKPAY profile.</p>
+        <div class="pay-card">
+          <h3>OKPAY Portal</h3>
+          <ul>
+            <li>Processing Time: <strong>Real-time Instant</strong></li>
+            <li>Commission Fee: <strong>0% Platform Fee</strong></li>
+          </ul>
+          <button class="btn-action" onclick="alert('Redirecting to OKPAY Login...')">Proceed with OKPAY</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PERFECT MONEY PAGE -->
+    <div id="page-perfectmoney" class="page-section">
+      <div class="parchment-box content-panel">
+        <h2>Perfect Money Gateway</h2>
+        <p>Global secure checkout via Perfect Money e-Vouchers or direct balance transfer.</p>
+        <div class="pay-card">
+          <h3>Perfect Money Checkout</h3>
+          <ul>
+            <li>Processing Time: <strong>Instant</strong></li>
+            <li>Supports: <strong>e-Voucher & Direct Account</strong></li>
+          </ul>
+          <button class="btn-action" onclick="alert('Redirecting to Perfect Money Merchant...')">Pay with Perfect Money</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAYEER PAGE -->
+    <div id="page-payeer" class="page-section">
+      <div class="parchment-box content-panel">
+        <h2>PAYEER Multi-Currency Gateway</h2>
+        <p>Deposit using PAYEER wallet supporting global bank cards, e-currency, and crypto.</p>
+        <div class="pay-card">
+          <h3>PAYEER Portal</h3>
+          <ul>
+            <li>Supported Methods: <strong>Credit Cards, Crypto, E-Wallets</strong></li>
+            <li>Processing Time: <strong>Instant</strong></li>
+          </ul>
+          <button class="btn-action" onclick="alert('Redirecting to PAYEER Checkout...')">Pay via PAYEER</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Payment Partners Bar (Interactive Bottom Nav) -->
+    <div class="parchment-box payment-bar">
+      <span id="pay-advcash" onclick="showPage('advcash', 'pay-advcash')">💳 AdvCash</span>
+      <span id="pay-bitcoin" onclick="showPage('bitcoin', 'pay-bitcoin')">₿ Bitcoin</span>
+      <span id="pay-okpay" onclick="showPage('okpay', 'pay-okpay')">🌐 OKPAY</span>
+      <span id="pay-perfectmoney" onclick="showPage('perfectmoney', 'pay-perfectmoney')">🅿️ Perfect Money</span>
+      <span id="pay-payeer" onclick="showPage('payeer', 'pay-payeer')">⚡ PAYEER</span>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      Copyright Antiques Investment Group © 2026. All rights reserved.
+    </footer>
+
+  </div>
+
+  <script>
+    let selectedPercent = 5;
+
+    // Single unified function to switch between Top Nav and Bottom Payment Nav Pages
+    function showPage(pageName, payTabId = null) {
+      // Hide all page sections
+      const sections = document.querySelectorAll('.page-section');
+      sections.forEach(sec => sec.classList.remove('active'));
+
+      // Remove active states from main nav links
+      const navLinks = document.querySelectorAll('.nav-bar a');
+      navLinks.forEach(link => link.classList.remove('active'));
+
+      // Remove active states from payment gateway tabs
+      const payLinks = document.querySelectorAll('.payment-bar span');
+      payLinks.forEach(link => link.classList.remove('active-pay'));
+
+      // Show selected page
+      const targetPage = document.getElementById('page-' + pageName);
+      if (targetPage) targetPage.classList.add('active');
+
+      // Set active status on top nav if matching
+      const targetNav = document.getElementById('nav-' + pageName);
+      if (targetNav) targetNav.classList.add('active');
+
+      // Set active status on bottom payment bar if matching
+      if (payTabId) {
+        const targetPay = document.getElementById(payTabId);
+        if (targetPay) targetPay.classList.add('active-pay');
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Plan Card Selection
+    function selectPlan(percent, cardId) {
+      selectedPercent = percent;
+      
+      const cards = document.querySelectorAll('.tariff-card');
+      cards.forEach(c => c.classList.remove('selected'));
+      
+      const selectedCard = document.getElementById(cardId);
+      if (selectedCard) selectedCard.classList.add('selected');
+
+      calculateProfit();
+    }
+
+    // Profit Calculation Logic
+    function calculateProfit() {
+      const amount = document.getElementById('amountRange').value;
+      document.getElementById('amountVal').innerText = '$' + Number(amount).toLocaleString();
+      
+      const profit = (amount * selectedPercent) / 100;
+      document.getElementById('profitVal').innerText = '$' + profit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    // Video Play Trigger
+    function playPromoVideo() {
+      const video = document.getElementById('mainPromoVideo');
+      const overlay = document.getElementById('videoOverlay');
+      overlay.classList.add('hidden');
+      video.play();
+    }
+
+    // Initialize Default Selection
+    selectPlan(5, 'card-5');
+  </script>
+</body>
+</html>

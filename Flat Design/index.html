@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cute Aesthetic Neumorphic Dashboard</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Nunito:wght@600;700&display=swap');
+
+    :root {
+      --bg: #668ac1;
+      --card-bg: #f3f7f4;
+      --text-main: #3d4a46;
+      --text-sub: #7a8c85;
+      --accent-pink: #f2a4b3;
+      --accent-teal: #78a397;
+      --accent-yellow: #f1cf86;
+      --shadow-light: #ffffff;
+      --shadow-dark: #c1d2ca;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Fredoka', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      color: var(--text-main);
+      overflow-x: hidden;
+    }
+
+    .container {
+      width: 380px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      position: relative;
+    }
+
+    /* Soft Neumorphism Utility */
+    .card {
+      background: var(--card-bg);
+      border-radius: 28px;
+      padding: 16px;
+      box-shadow: 8px 8px 18px var(--shadow-dark),
+                  -8px -8px 18px var(--shadow-light);
+      position: relative;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+    }
+
+    /* 1. Digital Clock Widget */
+    .clock-widget {
+      grid-column: span 1;
+    }
+    .greeting {
+      font-size: 0.75rem;
+      color: var(--text-sub);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .digital-time {
+      font-size: 2.2rem;
+      font-weight: 600;
+      margin: 4px 0;
+      letter-spacing: -1px;
+    }
+    .date-str {
+      font-size: 0.8rem;
+      color: var(--text-sub);
+    }
+
+    /* 2. Days Counter Widget */
+    .counter-widget {
+      grid-column: span 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .toggle-pill {
+      width: 44px;
+      height: 22px;
+      background: var(--accent-teal);
+      border-radius: 20px;
+      position: relative;
+      cursor: pointer;
+    }
+    .toggle-pill::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: white;
+      border-radius: 50%;
+      top: 3px;
+      left: 4px;
+      transition: 0.3s;
+    }
+    .flower-icon {
+      position: absolute;
+      right: 12px;
+      top: -10px;
+      font-size: 2.2rem;
+      filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.1));
+      animation: float 3s ease-in-out infinite;
+    }
+    .counter-val {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+    .counter-label {
+      font-size: 0.7rem;
+      color: var(--text-sub);
+    }
+
+    /* 3. Analog Clock Widget */
+    .analog-widget {
+      grid-column: span 1;
+      height: 160px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .analog-clock {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(242,164,179,0.2) 0%, rgba(120,163,151,0.2) 100%), var(--card-bg);
+      box-shadow: inset 4px 4px 8px var(--shadow-dark),
+                  inset -4px -4px 8px var(--shadow-light);
+      position: relative;
+    }
+    .hand {
+      position: absolute;
+      bottom: 50%;
+      left: 50%;
+      transform-origin: bottom center;
+      border-radius: 4px;
+    }
+    .hour-hand {
+      width: 4px;
+      height: 30px;
+      background: var(--accent-pink);
+    }
+    .minute-hand {
+      width: 3px;
+      height: 42px;
+      background: var(--accent-yellow);
+    }
+    .center-cap {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent-teal);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* 4. Quick Actions / Status Grid */
+    .quick-grid {
+      grid-column: span 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .small-btn {
+      background: var(--card-bg);
+      border-radius: 18px;
+      box-shadow: 4px 4px 10px var(--shadow-dark), -4px -4px 10px var(--shadow-light);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.4rem;
+      cursor: pointer;
+      height: 60px;
+    }
+    .small-btn:active {
+      box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+    }
+    .countdown-card {
+      grid-column: span 2;
+      border-radius: 20px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* 5. Calendar Widget */
+    .calendar-widget {
+      grid-column: span 1;
+    }
+    .month-header {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--accent-pink);
+    }
+    .days-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+      font-size: 0.65rem;
+      text-align: center;
+    }
+    .day-active {
+      background: var(--accent-yellow);
+      border-radius: 50%;
+      font-weight: bold;
+      color: #333;
+    }
+
+    /* 6. Music Player */
+    .music-widget {
+      grid-column: span 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .track-title {
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 8px 0;
+    }
+    .play-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      font-size: 0.7rem;
+      color: var(--accent-pink);
+      border: 1px solid var(--accent-pink);
+    }
+    .waveform {
+      display: flex;
+      gap: 2px;
+      align-items: center;
+      height: 16px;
+    }
+    .bar {
+      width: 3px;
+      height: 6px;
+      background: var(--accent-teal);
+      border-radius: 2px;
+    }
+    .playing .bar {
+      animation: wave 0.6s infinite alternate ease-in-out;
+    }
+    .playing .bar:nth-child(2) { animation-delay: 0.2s; }
+    .playing .bar:nth-child(3) { animation-delay: 0.4s; }
+
+    /* 7. Slider & Interactive Pills */
+    .bottom-pills {
+      grid-column: span 2;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .pill-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .slider-card {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+    }
+    .custom-slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: #cdded7;
+      outline: none;
+    }
+    .custom-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      box-shadow: 2px 2px 4px var(--shadow-dark);
+      cursor: pointer;
+      border: 2px solid var(--accent-teal);
+    }
+
+    /* Animations */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    @keyframes wave {
+      0% { height: 4px; }
+      100% { height: 16px; }
+    }
+
+    /* Bubble Effect Canvas */
+    #bubbleCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="bubbleCanvas"></canvas>
+
+  <div class="container">
+    
+    <!-- Digital Clock -->
+    <div class="card clock-widget">
+      <div class="greeting">🌙 Good Morning~</div>
+      <div class="digital-time" id="digitalTime">00:00</div>
+      <div class="date-str" id="dateStr">06/01 Saturday 😊</div>
+    </div>
+
+    <!-- Days Counter -->
+    <div class="card counter-widget">
+      <div style="display: flex; justify-content: space-between;">
+        <div class="toggle-pill"></div>
+        <div class="flower-icon">🌷</div>
+      </div>
+      <div>
+        <div class="counter-label">Distance from birthday</div>
+        <div class="counter-val">213 <span style="font-size:0.8rem;">Day</span></div>
+      </div>
+    </div>
+
+    <!-- Analog Clock -->
+    <div class="card analog-widget">
+      <div class="analog-clock">
+        <div class="hand hour-hand" id="hourHand"></div>
+        <div class="hand minute-hand" id="minHand"></div>
+        <div class="center-cap"></div>
+      </div>
+    </div>
+
+    <!-- Quick Grid -->
+    <div class="quick-grid">
+      <div class="small-btn">⛅</div>
+      <div class="small-btn">👕</div>
+      <div class="card countdown-card">
+        <span style="font-size: 0.65rem; color: var(--text-sub);">Countdown</span>
+        <span style="font-size: 1.1rem; font-weight: bold; color: var(--accent-teal);">⏳</span>
+        <span style="font-size: 0.75rem; font-weight: bold;">09 <span style="font-size: 0.6rem; color: var(--text-sub);">times</span></span>
+      </div>
+    </div>
+
+    <!-- Calendar -->
+    <div class="card calendar-widget">
+      <div class="month-header">| Jun.</div>
+      <div class="days-grid">
+        <span>Sun</span><span>Mon</span><span>Feb</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+        <span>26</span><span>27</span><span>28</span><span>29</span><span>30</span><span>31</span><span class="day-active">1</span>
+      </div>
+    </div>
+
+    <!-- Music Player -->
+    <div class="card music-widget">
+      <div class="track-title" style="margin-top:4px;">Cool dog Music</div>
+      <div class="controls">
+        <span style="cursor:pointer; font-size:0.8rem;">⏮</span>
+        <div class="play-btn" id="playBtn">K</div>
+        <span style="cursor:pointer; font-size:0.8rem;">⏭</span>
+      </div>
+      <div class="waveform" id="waveform">
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      </div>
+    </div>
+
+    <!-- Bottom Actions & Slider -->
+    <div class="bottom-pills">
+      <div class="pill-btn" onclick="spawnHearts()">love 💖</div>
+      <div class="pill-btn" onclick="triggerBubbles()">bubble 🧼</div>
+    </div>
+
+    <div class="card slider-card" style="grid-column: span 2;">
+      <input type="range" class="custom-slider" min="0" max="100" value="62" id="slider">
+      <span id="sliderVal" style="font-size: 0.8rem; font-weight: 600;">62%</span>
+    </div>
+
+  </div>
+
+  <script>
+    // Live Digital & Analog Clock Script
+    function updateClocks() {
+      const now = new Date();
+      
+      // Digital Clock
+      const hrs = String(now.getHours()).padStart(2, '0');
+      const mins = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('digitalTime').innerText = `${hrs}:${mins}`;
+
+      // Date
+      const options = { month: '2-digit', day: '2-digit', weekday: 'short' };
+      document.getElementById('dateStr').innerText = now.toLocaleDateString('en-US', options) + " 😊";
+
+      // Analog Clock Hands
+      const hours = now.getHours() % 12;
+      const minutes = now.getMinutes();
+      const seconds = now.getSeconds();
+
+      const hourDeg = (hours * 30) + (minutes * 0.5);
+      const minDeg = (minutes * 6) + (seconds * 0.1);
+
+      document.getElementById('hourHand').style.transform = `rotate(${hourDeg}deg)`;
+      document.getElementById('minHand').style.transform = `rotate(${minDeg}deg)`;
+    }
+    setInterval(updateClocks, 1000);
+    updateClocks();
+
+    // Music Waveform Toggle
+    const playBtn = document.getElementById('playBtn');
+    const waveform = document.getElementById('waveform');
+    let isPlaying = false;
+
+    playBtn.addEventListener('click', () => {
+      isPlaying = !isPlaying;
+      if (isPlaying) {
+        waveform.classList.add('playing');
+        playBtn.style.background = 'var(--accent-pink)';
+        playBtn.style.color = '#fff';
+      } else {
+        waveform.classList.remove('playing');
+        playBtn.style.background = 'var(--card-bg)';
+        playBtn.style.color = 'var(--accent-pink)';
+      }
+    });
+
+    // Interactive Slider Value Update
+    const slider = document.getElementById('slider');
+    const sliderVal = document.getElementById('sliderVal');
+    slider.addEventListener('input', (e) => {
+      sliderVal.innerText = `${e.target.value}%`;
+    });
+
+    // Floating Canvas Animation (Bubbles & Hearts Effect)
+    const canvas = document.getElementById('bubbleCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor(x, y, type) {
+        this.x = x || Math.random() * canvas.width;
+        this.y = y || canvas.height + 20;
+        this.size = Math.random() * 12 + 8;
+        this.speedY = Math.random() * -1.5 - 0.5;
+        this.speedX = Math.random() * 1 - 0.5;
+        this.opacity = 1;
+        this.type = type || 'bubble';
+      }
+      update() {
+        this.y += this.speedY;
+        this.x += this.speedX;
+        this.opacity -= 0.005;
+      }
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = Math.max(this.opacity, 0);
+        if (this.type === 'bubble') {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+          ctx.fill();
+        } else {
+          ctx.font = `${this.size * 1.5}px serif`;
+          ctx.fillText('💖', this.x, this.y);
+        }
+        ctx.restore();
+      }
+    }
+
+    function triggerBubbles() {
+      for (let i = 0; i < 15; i++) {
+        particles.push(new Particle(null, null, 'bubble'));
+      }
+    }
+
+    function spawnHearts() {
+      for (let i = 0; i < 10; i++) {
+        particles.push(new Particle(null, null, 'heart'));
+      }
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p, index) => {
+        p.update();
+        p.draw();
+        if (p.opacity <= 0) particles.splice(index, 1);
+      });
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+  </script>
+</body>
+</html>

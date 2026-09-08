@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glassmorphic Calendar Widget</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a472a 0%, #0f2818 50%, #1a3a2a 100%);
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><defs><linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23087e8b;stop-opacity:0.1"/><stop offset="100%" style="stop-color:%23005f73;stop-opacity:0.2"/></linearGradient><filter id="blur"><feGaussianBlur in="SourceGraphic" stdDeviation="1"/></filter></defs><path d="M0,300 Q300,200 600,250 T1200,300 L1200,800 L0,800 Z" fill="url(%23g1)" filter="url(%23blur)"/><path d="M0,400 Q250,350 500,380 T1000,400 L1200,450 L1200,800 L0,800 Z" fill="url(%23g1)" opacity="0.7"/></svg>');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: background 0.5s ease;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .calendar-card {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            color: white;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .toggle-group {
+            display: flex;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px;
+            border-radius: 12px;
+        }
+
+        .toggle-btn {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            /* color: rgba(8, 137, 176, 0.6); */
+            color: rgb(8, 115, 139);
+            cursor: pointer;
+            border-radius: 10px;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .toggle-btn.active {
+            background: rgba(255, 255, 255, 0.25);
+            color: rgb(8, 115, 139);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+        }
+
+        .toggle-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .settings-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+
+        .settings-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: rotate(20deg);
+        }
+
+        .date-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .month-year {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #02414d, #94aed0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .day-of-week {
+            font-size: 14px;
+            color: rgba(40, 91, 110, 0.7);
+        }
+
+        .calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgb(5, 51, 66);
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+            
+        }
+
+        .weekday {
+            text-align: center;
+            font-size: 12px;
+            color: rgba(4, 73, 100, 0.6);
+            font-weight: 500;
+            padding: 8px 0;
+            letter-spacing: 0.5px;
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .day {.weekday
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
+            color: rgba(4, 101, 139, 0.8);
+            font-weight: 500;
+        }
+
+        .day:hover:not(.empty) {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+        }
+
+        .day.today {
+            background: rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: rgba(70, 136, 146, 0.362);
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .day.holiday {
+            background: rgba(220, 53, 69, 0.3);
+            border: 1px solid rgba(220, 53, 69, 0.5);
+            color: #ff8a9b;
+        }
+
+        .day.festival {
+            background: rgba(255, 193, 7, 0.3);
+            border: 1px solid rgba(255, 193, 7, 0.5);
+            color: #ffd54f;
+        }
+
+        .day.dob {
+            background: rgba(76, 175, 80, 0.3);
+            border: 1px solid rgba(76, 175, 80, 0.5);
+            color: #81c784;
+        }
+
+        .day.empty {
+            opacity: 0.3;
+            cursor: default;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: space-between;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: rgb(54, 127, 144);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: rgba(20, 30, 48, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 28px;
+            max-width: 400px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            color: white;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 28px;
+            height: 28px;
+            transition: transform 0.2s ease;
+        }
+
+        .close-btn:hover {
+            transform: rotate(90deg);
+        }
+
+        .setting-item {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 8px;
+            display: block;
+            font-weight: 500;
+        }
+
+        .setting-input, .setting-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            color: rgb(170, 169, 169);
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .setting-input:focus, .setting-select:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
+        }
+
+        .setting-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .setting-select {
+            cursor: pointer;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .checkbox-item input {
+            cursor: pointer;
+            accent-color: #4caf50;
+            width: 16px;
+            height: 16px;
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .week-view {
+            display: none;
+        }
+
+        .week-view.active {
+            display: block;
+        }
+
+        .month-view.active {
+            display: block;
+        }
+
+        .month-view {
+            display: none;
+        }
+
+        .week-day-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .week-day-item {
+            text-align: center;
+        }
+
+        .week-day-item .weekday {
+            display: block;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 11px;
+            margin-top: 16px;
+            padding-top: 16px;
+            padding-bottom: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: rgba(60, 143, 162, 0.7);
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(76, 175, 80, 0.95);
+            backdrop-filter: blur(10px);
+            color: rgb(1, 38, 44);
+            padding: 16px 24px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            animation: slideInRight 0.4s ease;
+            z-index: 2000;
+            max-width: 300px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .toast-notification.show {
+            display: block;
+        }
+
+        .toast-notification.success {
+            background: rgba(76, 175, 80, 0.95);
+            border-color: rgba(129, 199, 132, 0.5);
+        }
+
+        .toast-notification.info {
+            background: rgba(33, 150, 243, 0.95);
+            border-color: rgba(100, 181, 246, 0.5);
+        }
+
+        .toast-notification.error {
+            background: rgba(244, 67, 54, 0.95);
+            border-color: rgba(229, 57, 53, 0.5);
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .date-info-display {
+            background: rgba(33, 150, 243, 0.15);
+            border: 1px solid rgba(33, 150, 243, 0.3);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 16px;
+            font-size: 12px;
+            color: rgba(100, 181, 246, 0.9);
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .date-info-display.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .settings-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .apply-btn, .reset-btn {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(76, 175, 80, 0.2);
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn {
+            background: rgba(255, 193, 7, 0.2);
+            border-color: rgba(255, 193, 7, 0.3);
+        }
+
+        .apply-btn:hover {
+            background: rgba(76, 175, 80, 0.35);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .reset-btn:hover {
+            background: rgba(255, 193, 7, 0.35);
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .settings-section-title {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 16px;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .settings-section-title:first-of-type {
+            margin-top: 0;
+        }
+
+        .modal-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .modal-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .selected-settings-preview {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 16px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .preview-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .preview-value {
+            color: rgba(100, 181, 246, 0.9);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="calendar-card">
+            <div class="header">
+                <div class="toggle-group">
+                    <button class="toggle-btn active" onclick="switchView('week')">Weekly</button>
+                    <button class="toggle-btn" onclick="switchView('month')">Monthly</button>
+                </div>
+                <button class="settings-btn" onclick="openSettings()">⚙️</button>
+            </div>
+
+            <!-- Month View -->
+            <div class="month-view active">
+                <div class="date-header">
+                    <div class="month-year" id="currentMonth">April 2024</div>
+                    <div class="day-of-week" id="currentDay">Today</div>
+                </div>
+
+                <div class="calendar-nav">
+                    <button class="nav-btn" onclick="previousMonth()">← Prev</button>
+                    <button class="nav-btn" onclick="goToday()">Today</button>
+                    <button class="nav-btn" onclick="nextMonth()">Next →</button>
+                </div>
+
+                <div class="weekdays">
+                    <div class="weekday">S</div>
+                    <div class="weekday">M</div>
+                    <div class="weekday">T</div>
+                    <div class="weekday">W</div>
+                    <div class="weekday">T</div>
+                    <div class="weekday">F</div>
+                    <div class="weekday">S</div>
+                </div>
+
+                <div class="days-grid" id="daysGrid"></div>
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: rgba(255, 255, 255, 0.25); border: 1px solid rgba(255, 255, 255, 0.4);"></div>
+                        <span>Today</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: rgba(220, 53, 69, 0.3); border: 1px solid rgba(220, 53, 69, 0.5);"></div>
+                        <span>Holiday</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: rgba(255, 193, 7, 0.3); border: 1px solid rgba(255, 193, 7, 0.5);"></div>
+                        <span>Festival</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: rgba(76, 175, 80, 0.3); border: 1px solid rgba(76, 175, 80, 0.5);"></div>
+                        <span>Birthday</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Week View -->
+            <div class="week-view">
+                <div class="date-header">
+                    <div class="month-year" id="weekRange">Apr 18 - 24</div>
+                    <div class="day-of-week">Week View</div>
+                </div>
+
+                <div class="calendar-nav">
+                    <button class="nav-btn" onclick="previousWeek()">← Prev</button>
+                    <button class="nav-btn" onclick="goToday()">Today</button>
+                    <button class="nav-btn" onclick="nextWeek()">Next →</button>
+                </div>
+
+                <div class="week-day-header" id="weekGrid"></div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="action-btn" onclick="addReminder()">📌 Reminder</button>
+                <button class="action-btn" onclick="newEvent()">➕ Event</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="settingsTitle">Settings</span>
+                <button class="close-btn" onclick="closeSettings()">×</button>
+            </div>
+
+            <!-- Language Section -->
+            <div class="settings-section-title">🌍 LANGUAGE SETTINGS</div>
+            
+            <div class="setting-item">
+                <label class="setting-label" id="langLabel">Select Language / भाषा चुनें</label>
+                <select class="setting-select" id="languageSelect" onchange="previewSettings()">
+                    <option value="en">🇬🇧 English</option>
+                    <option value="hi">🇮🇳 हिंदी (Hindi)</option>
+                    <option value="es">🇪🇸 Español (Spanish)</option>
+                    <option value="fr">🇫🇷 Français (French)</option>
+                    <option value="de">🇩🇪 Deutsch (German)</option>
+                    <option value="mr">🇮🇳 मराठी (Marathi)</option>
+                    <option value="bn">🇮🇳 বাংলা (Bengali)</option>
+                    <option value="te">🇮🇳 తెలుగు (Telugu)</option>
+                    <option value="ta">🇮🇳 தமிழ் (Tamil)</option>
+                    <option value="gu">🇮🇳 ગુજરાતી (Gujarati)</option>
+                    <option value="kn">🇮🇳 ಕನ್ನಡ (Kannada)</option>
+                    <option value="ml">🇮🇳 മലയാളം (Malayalam)</option>
+                </select>
+            </div>
+
+            <!-- Festival Section -->
+            <div class="settings-section-title">🎉 FESTIVAL SETTINGS</div>
+            
+            <div class="setting-item">
+                <label class="setting-label" id="festivalLabel">Show Festivals</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="diwali" checked onchange="previewSettings()">
+                        <label for="diwali">Diwali 🪔</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="holi" checked onchange="previewSettings()">
+                        <label for="holi">Holi 🎨</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="independence" checked onchange="previewSettings()">
+                        <label for="independence">Independence 🇮🇳</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Holiday Section -->
+            <div class="settings-section-title">📅 HOLIDAY SETTINGS</div>
+            
+            <div class="setting-item">
+                <label class="setting-label" id="holidayLabel">Display Holidays</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="indianHolidays" checked onchange="previewSettings()">
+                        <label for="indianHolidays" id="indHolLabel">Indian Holidays</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="internationalHolidays" onchange="previewSettings()">
+                        <label for="internationalHolidays" id="intlHolLabel">International</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Birthday Section -->
+            <div class="settings-section-title">🎂 BIRTHDAY SETTINGS</div>
+            
+            <div class="setting-item">
+                <label class="setting-label" id="dobLabel">Your Birthday Date</label>
+                <input type="date" id="dobInput" class="setting-input" onchange="previewSettings()">
+                <small style="color: rgba(255,255,255,0.5); display: block; margin-top: 6px;" id="dobHelper">Set your birthday for special highlight</small>
+                <div id="dobDisplay" style="color: rgba(100, 181, 246, 0.9); margin-top: 6px; font-size: 12px; display: none;"></div>
+            </div>
+
+
+
+            <!-- Settings Preview -->
+            <div class="selected-settings-preview">
+                <div style="color: rgba(255,255,255,0.6); font-size: 11px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">⚙️ Current Selection</div>
+                <div class="preview-item">
+                    <span>Language:</span>
+                    <span class="preview-value" id="previewLang">English</span>
+                </div>
+                <div class="preview-item">
+                    <span>Holidays:</span>
+                    <span class="preview-value" id="previewHolidays">Enabled</span>
+                </div>
+                <div class="preview-item">
+                    <span>Birthday:</span>
+                    <span class="preview-value" id="previewBday">Not Set</span>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="settings-actions">
+                <button class="apply-btn" onclick="applySettings()">✓ Apply Settings</button>
+                <button class="reset-btn" onclick="resetSettings()">⟲ Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Date Selection Info Display -->
+    <div class="date-info-display" id="dateInfoDisplay"></div>
+
+    <!-- Toast Notification -->
+    <div class="toast-notification" id="toast"></div>
+
+    <script>
+        let currentDate = new Date();
+        let selectedLanguage = 'en';
+        let userBirthday = null;
+
+        const translations = {
+            en: {
+                today: 'Today',
+                weekView: 'Week View',
+                reminder: 'Reminder',
+                event: 'Event',
+                settings: 'Settings',
+                language: 'Language',
+                festivals: 'Show Festivals',
+                birthday: 'Birthday Reminder',
+                birthdayHelper: 'Set your birthday',
+                holidays: 'Holidays Display',
+                indianHolidays: 'Indian Holidays',
+                internationalHolidays: 'International',
+                applySettings: 'Settings Applied Successfully!',
+                birthdaySet: 'Birthday set for',
+                noBirthday: 'No birthday selected',
+                english: 'English',
+            },
+            hi: {
+                today: 'आज',
+                weekView: 'सप्ताह का दृश्य',
+                reminder: 'स्मारक',
+                event: 'इवेंट',
+                settings: 'सेटिंग्स',
+                language: 'भाषा',
+                festivals: 'त्योहार',
+                birthday: 'जन्मदिन अलर्ट',
+                birthdayHelper: 'अपना जन्मदिन सेट करें',
+                holidays: 'छुट्टियां',
+                indianHolidays: 'भारतीय छुट्टियां',
+                internationalHolidays: 'अंतर्राष्ट्रीय',
+                applySettings: 'सेटिंग्स लागू हो गईं!',
+                birthdaySet: 'जन्मदिन सेट किया गया',
+                noBirthday: 'जन्मदिन चुना नहीं गया',
+                english: 'हिंदी',
+            },
+            es: {
+                today: 'Hoy',
+                weekView: 'Vista Semanal',
+                reminder: 'Recordatorio',
+                event: 'Evento',
+                settings: 'Configuración',
+                language: 'Idioma',
+                festivals: 'Mostrar Festivales',
+                birthday: 'Recordatorio de Cumpleaños',
+                birthdayHelper: 'Establece tu cumpleaños',
+                holidays: 'Mostrar Vacaciones',
+                indianHolidays: 'Vacaciones Indias',
+                internationalHolidays: 'Internacional',
+                applySettings: '¡Configuración aplicada!',
+                birthdaySet: 'Cumpleaños establecido',
+                noBirthday: 'Sin cumpleaños',
+                english: 'Español',
+            },
+            fr: {
+                today: "Aujourd'hui",
+                weekView: 'Affichage Hebdomadaire',
+                reminder: 'Rappel',
+                event: 'Événement',
+                settings: 'Paramètres',
+                language: 'Langue',
+                festivals: 'Afficher Festivals',
+                birthday: 'Rappel Anniversaire',
+                birthdayHelper: 'Définissez votre anniversaire',
+                holidays: 'Afficher Jours Fériés',
+                indianHolidays: 'Jours Fériés Indiens',
+                internationalHolidays: 'International',
+                applySettings: 'Paramètres appliqués!',
+                birthdaySet: 'Anniversaire défini',
+                noBirthday: 'Pas d\'anniversaire',
+                english: 'Français',
+            },
+            de: {
+                today: 'Heute',
+                weekView: 'Wochenansicht',
+                reminder: 'Erinnerung',
+                event: 'Ereignis',
+                settings: 'Einstellungen',
+                language: 'Sprache',
+                festivals: 'Festivals Anzeigen',
+                birthday: 'Geburtstags Erinnerung',
+                birthdayHelper: 'Geburtstag einstellen',
+                holidays: 'Feiertage Anzeigen',
+                indianHolidays: 'Indische Feiertage',
+                internationalHolidays: 'International',
+                applySettings: 'Einstellungen angewendet!',
+                birthdaySet: 'Geburtstag eingestellt',
+                noBirthday: 'Kein Geburtstag',
+                english: 'Deutsch',
+            },
+            mr: {
+                today: 'आज',
+                weekView: 'आठवड्याचा दृश्य',
+                reminder: 'स्मारक',
+                event: 'कार्यक्रम',
+                settings: 'सेटिंग्स',
+                language: 'भाषा',
+                festivals: 'सण',
+                birthday: 'वाढदिवस अलर्ट',
+                birthdayHelper: 'आपला वाढदिवस सेट करा',
+                holidays: 'सुट्टीचे दिवस',
+                indianHolidays: 'भारतीय सुट्टीचे दिवस',
+                internationalHolidays: 'आंतरराष्ट्रीय',
+                applySettings: 'सेटिंग्स लागू झाली!',
+                birthdaySet: 'वाढदिवस सेट करण्यात आला',
+                noBirthday: 'वाढदिवस सेट नाही',
+                english: 'मराठी',
+            },
+            bn: {
+                today: 'আজ',
+                weekView: 'সাপ্তাহিক ভিউ',
+                reminder: 'অনুস্মারক',
+                event: 'ইভেন্ট',
+                settings: 'সেটিংস',
+                language: 'ভাষা',
+                festivals: 'উৎসব',
+                birthday: 'জন্মদিনের সতর্কতা',
+                birthdayHelper: 'আপনার জন্মদিন সেট করুন',
+                holidays: 'ছুটির দিনগুলি',
+                indianHolidays: 'ভারতীয় ছুটির দিনগুলি',
+                internationalHolidays: 'আন্তর্জাতিক',
+                applySettings: 'সেটিংস প্রয়োগ করা হয়েছে!',
+                birthdaySet: 'জন্মদিন সেট',
+                noBirthday: 'জন্মদিন নেই',
+                english: 'বাংলা',
+            },
+            te: {
+                today: 'ఈ రోజు',
+                weekView: 'వారపు వీక్షణ',
+                reminder: 'రిమైండర్',
+                event: 'ఈవెంట్',
+                settings: 'సెట్టింగ్‌లు',
+                language: 'భాష',
+                festivals: 'పండుగలు',
+                birthday: 'పుట్టినరోజు రిమైండర్',
+                birthdayHelper: 'మీ పుట్టినరోజు సెట్ చేయండి',
+                holidays: 'సెలవులు',
+                indianHolidays: 'భారతీయ సెలవులు',
+                internationalHolidays: 'అంతర్జాతీయ',
+                applySettings: 'సెట్టింగ్‌లు వర్తించాయి!',
+                birthdaySet: 'పుట్టినరోజు సెట్ చేయబడింది',
+                noBirthday: 'పుట్టినరోజు లేదు',
+                english: 'తెలుగు',
+            },
+            ta: {
+                today: 'இன்று',
+                weekView: 'வார காட்சி',
+                reminder: 'நினைவூட்டல்',
+                event: 'நிகழ்வு',
+                settings: 'அமைப்புகள்',
+                language: 'மொழி',
+                festivals: 'திருவிழாக்கள்',
+                birthday: 'பிறந்த நாள் நினைவூட்டல்',
+                birthdayHelper: 'உங்கள் பிறந்த நாளை அமைக்கவும்',
+                holidays: 'ஆய்வுரிமை',
+                indianHolidays: 'இந்திய ஆய்வுரிமைகள்',
+                internationalHolidays: 'சர்வதேச',
+                applySettings: 'அமைப்புகள் பயன்படுத்தப்பட்டுள்ளன!',
+                birthdaySet: 'பிறந்த நாள் அமைக்கப்பட்டது',
+                noBirthday: 'பிறந்த நாள் இல்லை',
+                english: 'தமிழ்',
+            },
+            gu: {
+                today: 'આજ',
+                weekView: 'સાપ્તાહિક દૃશ્ય',
+                reminder: 'રિમાઇન્ડર',
+                event: 'ઇવેન્ટ',
+                settings: 'સેટિંગ્સ',
+                language: 'ભાષા',
+                festivals: 'તહેવાર',
+                birthday: 'જન્મદિન અલર્ટ',
+                birthdayHelper: 'તમારો જન્મદિન સેટ કરો',
+                holidays: 'છુટ્ટીઓ',
+                indianHolidays: 'ભારતીય છુટ્ટીઓ',
+                internationalHolidays: 'આંતરાષ્ટ્રીય',
+                applySettings: 'સેટિંગ્સ લાગુ કરવામાં આવી!',
+                birthdaySet: 'જન્મદિન સેટ',
+                noBirthday: 'જન્મદિન નથી',
+                english: 'ગુજરાતી',
+            },
+            kn: {
+                today: 'ಇಂದು',
+                weekView: 'ವಾರದ ವೀಕ್ಷಣೆ',
+                reminder: 'ಜ್ಞಾಪನೆ',
+                event: 'ಈವೆಂಟ್',
+                settings: 'ಸೆಟ್ಟಿಂಗ್‌ಗಳು',
+                language: 'ಭಾಷೆ',
+                festivals: 'ಹಬ್ಬಗಳು',
+                birthday: 'ಜನ್ಮದಿನದ ಎಚ್ಚರಿಕೆ',
+                birthdayHelper: 'ನಿಮ್ಮ ಜನ್ಮದಿನವನ್ನು ಸೆಟ್ ಮಾಡಿ',
+                holidays: 'ರಜೆಗಳು',
+                indianHolidays: 'ಭಾರತೀಯ ರಜೆಗಳು',
+                internationalHolidays: 'ಆಂತರರಾಷ್ಟ್ರೀಯ',
+                applySettings: 'ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಅನ್ವಯಿಸಲಾಗಿದೆ!',
+                birthdaySet: 'ಜನ್ಮದಿನ ಸೆಟ್ ಮಾಡಿದೆ',
+                noBirthday: 'ಜನ್ಮದಿನವಿಲ್ಲ',
+                english: 'ಕನ್ನಡ',
+            },
+            ml: {
+                today: 'ഇന്ന്',
+                weekView: 'വാരപ്പകാര ദൃശ്യം',
+                reminder: 'അനുസ്മരണം',
+                event: 'ഇവന്റ്',
+                settings: 'ക്രമീകരണങ്ങൾ',
+                language: 'ഭാഷ',
+                festivals: 'ഉത്സവങ്ങൾ',
+                birthday: 'ജന്മദിനാനുസ്മരണം',
+                birthdayHelper: 'നിങ്ങളുടെ ജന്മദിനം സെറ്റ് ചെയ്യുക',
+                holidays: 'അവധിദിനങ്ങൾ',
+                indianHolidays: 'ഇന്ത്യൻ അവധിദിനങ്ങൾ',
+                internationalHolidays: 'അന്താരാഷ്ട്രീയ',
+                applySettings: 'ക്രമീകരണങ്ങൾ പ്രയോഗിച്ചു!',
+                birthdaySet: 'ജന്മദിനം സെറ്റ് ചെയ്തു',
+                noBirthday: 'ജന്മദിനമില്ല',
+                english: 'മലയാളം',
+            }
+        };
+
+        const festivals = {
+            2024: {
+                '03-08': { name: 'Holi', nameHi: 'होली', type: 'festival' },
+                '11-01': { name: 'Diwali', nameHi: 'दिवाली', type: 'festival' },
+                '08-15': { name: 'Independence Day', nameHi: 'स्वतंत्रता दिवस', type: 'festival' }
+            },
+            2025: {
+                '03-29': { name: 'Holi', nameHi: 'होली', type: 'festival' },
+                '10-20': { name: 'Diwali', nameHi: 'दिवाली', type: 'festival' },
+                '08-15': { name: 'Independence Day', nameHi: 'स्वतंत्रता दिवस', type: 'festival' }
+            }
+        };
+
+        const holidays = {
+            2024: {
+                '01-26': { name: 'Republic Day', nameHi: 'गणतंत्र दिवस', type: 'holiday' },
+                '03-25': { name: 'Holi', nameHi: 'होली', type: 'holiday' },
+                '04-21': { name: 'Ram Navami', nameHi: 'राम नवमी', type: 'holiday' },
+                '04-17': { name: 'Mahavir Jayanti', nameHi: 'महावीर जयंती', type: 'holiday' }
+            },
+            2025: {
+                '01-26': { name: 'Republic Day', nameHi: 'गणतंत्र दिवस', type: 'holiday' },
+                '03-14': { name: 'Holi', nameHi: 'होली', type: 'holiday' }
+            }
+        };
+
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDayOfWeek = firstDay.getDay();
+            
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            const monthNamesHi = ['जनवरी', 'फरवरी', 'मार्च', 'अप्रैल', 'मई', 'जून',
+                'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'];
+            
+            document.getElementById('currentMonth').textContent = 
+                selectedLanguage === 'en' ? 
+                `${monthNames[month]} ${year}` : 
+                `${monthNamesHi[month]} ${year}`;
+            
+            document.getElementById('currentDay').textContent = 
+                selectedLanguage === 'en' ? translations.en.today : translations.hi.today;
+            
+            let daysHTML = '';
+            for (let i = 0; i < startingDayOfWeek; i++) {
+                daysHTML += '<div class="day empty"></div>';
+            }
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dateObj = new Date(year, month, day);
+                const isToday = dateObj.toDateString() === new Date().toDateString();
+                
+                let classes = 'day';
+                if (isToday) classes += ' today';
+                
+                if (document.getElementById('indianHolidays').checked && holidays[year] && holidays[year][dateStr]) {
+                    classes += ' holiday';
+                }
+                if (document.getElementById('diwali').checked && festivals[year] && festivals[year][dateStr]) {
+                    classes += ' festival';
+                }
+                
+                if (userBirthday) {
+                    const birthdayMonth = String(userBirthday.getMonth() + 1).padStart(2, '0');
+                    const birthdayDay = String(userBirthday.getDate()).padStart(2, '0');
+                    if (dateStr === `${birthdayMonth}-${birthdayDay}`) {
+                        classes += ' dob';
+                    }
+                }
+                
+                daysHTML += `<div class="${classes}">${day}</div>`;
+            }
+            
+            document.getElementById('daysGrid').innerHTML = daysHTML;
+        }
+
+        function renderWeek() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const date = currentDate.getDate();
+            
+            const currentDay = currentDate.getDay();
+            const startDate = new Date(year, month, date - currentDay);
+            
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const endDate = new Date(startDate);
+            endDate.setDate(endDate.getDate() + 6);
+            
+            document.getElementById('weekRange').textContent = 
+                `${monthNames[startDate.getMonth()]} ${startDate.getDate()} - ${endDate.getDate()}`;
+            
+            let weekHTML = '';
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            
+            for (let i = 0; i < 7; i++) {
+                const dayDate = new Date(startDate);
+                dayDate.setDate(dayDate.getDate() + i);
+                
+                const isToday = dayDate.toDateString() === new Date().toDateString();
+                const dayNum = dayDate.getDate();
+                
+                let classes = 'day';
+                if (isToday) classes += ' today';
+                
+                weekHTML += `<div class="week-day-item">
+                    <div class="weekday">${dayNames[i]}</div>
+                    <div class="${classes}" style="margin: 0 auto; width: 50px;">${dayNum}</div>
+                </div>`;
+            }
+            
+            document.getElementById('weekGrid').innerHTML = weekHTML;
+        }
+
+        function switchView(view) {
+            const weeks = document.querySelectorAll('.toggle-btn');
+            weeks.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.querySelector('.month-view').classList.remove('active');
+            document.querySelector('.week-view').classList.remove('active');
+            
+            if (view === 'week') {
+                document.querySelector('.week-view').classList.add('active');
+                renderWeek();
+            } else {
+                document.querySelector('.month-view').classList.add('active');
+                renderCalendar();
+            }
+        }
+
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        }
+
+        function previousMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        }
+
+        function nextWeek() {
+            currentDate.setDate(currentDate.getDate() + 7);
+            renderWeek();
+        }
+
+        function previousWeek() {
+            currentDate.setDate(currentDate.getDate() - 7);
+            renderWeek();
+        }
+
+        function goToday() {
+            currentDate = new Date();
+            renderCalendar();
+            renderWeek();
+        }
+
+        function openSettings() {
+            document.getElementById('settingsModal').classList.add('active');
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.remove('active');
+        }
+
+        function previewSettings() {
+            const lang = document.getElementById('languageSelect').value;
+            const dobValue = document.getElementById('dobInput').value;
+            const hasHolidays = document.getElementById('indianHolidays').checked;
+            
+            // Update preview
+            const langNames = {
+                en: '🇬🇧 English',
+                hi: '🇮🇳 हिंदी',
+                es: '🇪🇸 Español',
+                fr: '🇫🇷 Français',
+                de: '🇩🇪 Deutsch',
+                mr: '🇮🇳 मराठी',
+                bn: '🇮🇳 বাংলা',
+                te: '🇮🇳 తెలుగు',
+                ta: '🇮🇳 தமிழ்',
+                gu: '🇮🇳 ગુજરાતી',
+                kn: '🇮🇳 ಕನ್ನಡ',
+                ml: '🇮🇳 മലയാളം'
+            };
+document.getElementById('previewLang').textContent = langNames[lang];
+            document.getElementById('previewHolidays').textContent = hasHolidays ? 'Enabled' : 'Disabled';
+            
+            if (dobValue) {
+                const dobDate = new Date(dobValue);
+                document.getElementById('previewBday').textContent = dobDate.toDateString();
+                document.getElementById('dobDisplay').style.display = 'block';
+                document.getElementById('dobDisplay').textContent = '✓ Birthday set: ' + dobDate.toDateString();
+            } else {
+                document.getElementById('previewBday').textContent = 'Not Set';
+                document.getElementById('dobDisplay').style.display = 'none';
+            }
+        }
+
+        function applySettings() {
+            const lang = document.getElementById('languageSelect').value;
+            const dobValue = document.getElementById('dobInput').value;
+            
+            // Apply language
+            selectedLanguage = lang;
+            updateLabels();
+            
+            // Apply birthday
+            if (dobValue) {
+                userBirthday = new Date(dobValue);
+            }
+            
+            // Update calendar
+            updateCalendar();
+            
+            // Show success notification
+            showToast('✓ ' + translations[lang].applySettings, 'success');
+            
+            // Close settings after delay
+            setTimeout(() => {
+                closeSettings();
+            }, 800);
+        }
+
+        function resetSettings() {
+            document.getElementById('languageSelect').value = 'en';
+            document.getElementById('dobInput').value = '';
+            document.getElementById('indianHolidays').checked = true;
+            document.getElementById('internationalHolidays').checked = false;
+            document.getElementById('diwali').checked = true;
+            document.getElementById('holi').checked = true;
+            document.getElementById('independence').checked = true;
+            
+            previewSettings();
+            showToast('⟲ Settings Reset to Default', 'info');
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast-notification show ' + type;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function updateLabels() {
+            const lang = translations[selectedLanguage];
+            document.getElementById('settingsTitle').textContent = lang.settings;
+            document.getElementById('langLabel').textContent = lang.language;
+            document.getElementById('festivalLabel').textContent = lang.festivals;
+            document.getElementById('dobLabel').textContent = lang.birthday;
+            document.getElementById('dobHelper').textContent = lang.birthdayHelper;
+            document.getElementById('holidayLabel').textContent = lang.holidays;
+            document.getElementById('indHolLabel').textContent = lang.indianHolidays;
+            document.getElementById('intlHolLabel').textContent = lang.internationalHolidays;
+        }
+
+        function updateCalendar() {
+            if (document.querySelector('.month-view').classList.contains('active')) {
+                renderCalendar();
+            } else {
+                renderWeek();
+            }
+        }
+
+        function setBirthday() {
+            const dobValue = document.getElementById('dobInput').value;
+            if (dobValue) {
+                userBirthday = new Date(dobValue);
+                showToast('🎂 Birthday set for ' + userBirthday.toDateString(), 'success');
+                updateCalendar();
+            }
+        }
+
+        function addReminder() {
+            showToast('📌 Reminder created! You can set reminders for any date.', 'info');
+        }
+
+        function newEvent() {
+            showToast('➕ New Event feature - Coming Soon! 🚀', 'info');
+        }
+
+        // Add click event to days for showing date info
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('day') && !e.target.classList.contains('empty')) {
+                const dayText = e.target.textContent;
+                const currentMonth = new Date();
+                const dateObj = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), parseInt(dayText));
+                
+                const dateInfo = document.getElementById('dateInfoDisplay');
+                const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                const dayName = dayNames[dateObj.getDay()];
+                
+                dateInfo.innerHTML = `
+                    <strong style="color: rgba(100, 181, 246, 0.9);">📅 Selected Date Info:</strong><br>
+                    <small>Date: ${dateObj.toDateString()} (${dayName})</small><br>
+                    <small>Day: ${dayText} | Month: ${currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' })}</small>
+                `;
+                dateInfo.classList.add('show');
+                
+                setTimeout(() => {
+                    dateInfo.classList.remove('show');
+                }, 5000);
+            }
+        });
+
+        // Initialize
+        renderCalendar();
+        renderWeek();
+        updateLabels();
+        previewSettings();
+    </script>
+</body>
+</html>

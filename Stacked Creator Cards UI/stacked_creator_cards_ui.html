@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stacked Creator Cards Interactive UI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0f1219;
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Subtle mesh background grid */
+        .bg-mesh {
+            background-color: #0c0f17;
+            background-image: 
+                radial-gradient(at 20% 20%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 80% 80%, rgba(236, 72, 153, 0.12) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(168, 85, 247, 0.1) 0px, transparent 50%);
+        }
+
+        /* Perspective Stage */
+        .perspective-container {
+            perspective: 1200px;
+        }
+
+        /* Base Card Styling */
+        .card {
+            position: absolute;
+            width: 320px;
+            height: 480px;
+            border-radius: 28px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+            user-select: none;
+            cursor: pointer;
+            transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.5s ease, filter 0.5s ease;
+            transform-style: preserve-3d;
+            will-change: transform, filter;
+        }
+
+        @media (min-width: 640px) {
+            .card {
+                width: 340px;
+                height: 500px;
+            }
+        }
+
+        /* Glassmorphism Overlays */
+        .glass-pill {
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .glass-bottom-panel {
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 60%, rgba(0, 0, 0, 0) 100%);
+        }
+
+        /* Card active status tilt effect transition override during mouse move */
+        .card.is-tilting {
+            transition: transform 0.08s linear, box-shadow 0.3s ease !important;
+        }
+
+        /* Custom scrollbar for control elements */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-mesh min-height-screen flex flex-col justify-between py-8 px-4 sm:px-6">
+
+    <header class="w-full max-w-4xl flex flex-col sm:flex-row items-center justify-between gap-4 mb-4 z-10 text-center sm:text-left">
+        <div>
+            <span class="text-xs font-bold tracking-widest text-indigo-400 uppercase bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20">Interactive Stack</span>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-white mt-2 tracking-tight">Featured Creators</h1>
+        </div>
+        <div class="flex items-center gap-2 bg-slate-800/60 backdrop-blur-md p-1.5 rounded-2xl border border-white/10 shadow-lg">
+            <button id="prevBtn" class="p-2.5 rounded-xl hover:bg-white/10 transition-colors text-white/80 hover:text-white active:scale-95" title="Previous Card">
+                <i class="fa-solid font-bold fa-chevron-left text-sm px-1"></i>
+            </button>
+            <button id="shuffleBtn" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-all shadow-md shadow-indigo-600/30 active:scale-95 flex items-center gap-2">
+                <i class="fa-solid fa-shuffle"></i> Cycle Stack
+            </button>
+            <button id="nextBtn" class="p-2.5 rounded-xl hover:bg-white/10 transition-colors text-white/80 hover:text-white active:scale-95" title="Next Card">
+                <i class="fa-solid font-bold fa-chevron-right text-sm px-1"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="relative w-full max-w-md h-[540px] flex items-center justify-center perspective-container my-auto">
+        <div id="cardsStack" class="relative w-full h-full flex items-center justify-center">
+            <!-- Cards will be dynamically rendered here -->
+        </div>
+    </main>
+
+    <footer class="w-full max-w-md z-10 mt-6 flex flex-col items-center gap-3">
+        <div class="flex items-center gap-4 text-xs text-slate-400 bg-slate-900/60 px-4 py-2 rounded-full border border-white/5 backdrop-blur-sm">
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-hand-pointer text-indigo-400"></i> Hover / Move for 3D Tilt</span>
+            <span class="text-slate-600">•</span>
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-mouse-pointer text-pink-400"></i> Click card to bring front</span>
+        </div>
+        <p class="text-xs text-slate-500">Card <span id="currentIndexText" class="font-bold text-white">1</span> of <span id="totalCardsText" class="font-bold text-white">5</span></p>
+    </footer>
+
+    <script>
+        // Creator Data Stack definition
+        const creatorsData = [
+            {
+                id: 1,
+                name: "Marline Bettye",
+                badge: "⭐ Top Creator",
+                handle: "@les_cherries",
+                category: "Fashion & Beauty",
+                avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+                bgImage: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80",
+                connected: false
+            },
+            {
+                id: 2,
+                name: "Nora Away",
+                badge: "🌟 Rising Star",
+                handle: "@norasaway",
+                category: "Lifestyle & Travels",
+                avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80",
+                bgImage: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&auto=format&fit=crop&q=80",
+                connected: false
+            },
+            {
+                id: 3,
+                name: "AJ Jones",
+                badge: "🎵 Popular Audio",
+                handle: "@aj_jones",
+                category: "Lifestyle & Music",
+                avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+                bgImage: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop&q=80",
+                connected: false
+            },
+            {
+                id: 4,
+                name: "Papi Papilo",
+                badge: "🔥 Trending",
+                handle: "@iempapilo",
+                category: "Lifestyle & Makeup",
+                avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=150&auto=format&fit=crop&q=80",
+                bgImage: "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=800&auto=format&fit=crop&q=80",
+                connected: false
+            },
+            {
+                id: 5,
+                name: "Jenny Wilson",
+                badge: "✨ Verified",
+                handle: "@jenny_wilson",
+                category: "Motivation & Lifestyle",
+                avatar: "https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=150&auto=format&fit=crop&q=80",
+                bgImage: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&auto=format&fit=crop&q=80",
+                connected: false
+            }
+        ];
+
+        let stackOrder = [0, 1, 2, 3, 4]; // Indexes into creatorsData
+        const stackContainer = document.getElementById('cardsStack');
+        let isHoveringStack = false;
+
+        function renderCards() {
+            stackContainer.innerHTML = '';
+            
+            // Loop through stack order from back (highest index) to front (index 0)
+            stackOrder.slice().reverse().forEach((creatorIndex, displayPositionFromBack) => {
+                const stackPos = stackOrder.length - 1 - displayPositionFromBack; // 0 = Top, 1 = Next...
+                const creator = creatorsData[creatorIndex];
+
+                const cardEl = document.createElement('div');
+                cardEl.className = `card card-position-${stackPos}`;
+                cardEl.dataset.stackPos = stackPos;
+                cardEl.dataset.creatorIndex = creatorIndex;
+
+                // Card Background image
+                cardEl.style.backgroundImage = `url('${creator.bgImage}')`;
+
+                // Calculate Stacking Transforms matching the exact staggered design layout
+                applyStackTransform(cardEl, stackPos, isHoveringStack);
+
+                // Card Content HTML Structure
+                cardEl.innerHTML = `
+                    <!-- Top Badge -->
+                    <div class="absolute top-5 left-0 right-0 flex justify-center pointer-events-none transition-opacity duration-300 ${stackPos === 0 ? 'opacity-100' : 'opacity-80'}">
+                        <span class="glass-pill px-3.5 py-1 rounded-full text-xs font-semibold text-white tracking-wide flex items-center gap-1.5">
+                            ${creator.badge}
+                        </span>
+                    </div>
+
+                    <!-- Creator Name Overlay -->
+                    <div class="absolute top-14 left-0 right-0 text-center px-4 transition-all duration-300 ${stackPos === 0 ? 'opacity-100 translate-y-0' : 'opacity-90 scale-95'}">
+                        <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight drop-shadow-md">
+                            ${creator.name}
+                        </h2>
+                    </div>
+
+                    <!-- Bottom Profile & Connect Glass Panel -->
+                    <div class="glass-bottom-panel absolute bottom-0 left-0 right-0 p-5 pt-12 flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3 overflow-hidden">
+                            <img src="${creator.avatar}" alt="${creator.name}" class="w-10 h-10 rounded-full object-cover border-2 border-white/60 shadow-md flex-shrink-0" />
+                            <div class="min-w-0">
+                                <p class="text-xs font-bold text-white truncate drop-shadow">${creator.handle}</p>
+                                <p class="text-[11px] text-white/80 truncate">${creator.category}</p>
+                            </div>
+                        </div>
+
+                        <button onclick="handleConnectClick(event, ${creatorIndex})" class="connect-btn flex-shrink-0 px-4 py-2 rounded-full font-bold text-xs tracking-wide transition-all duration-300 shadow-md active:scale-90 ${
+                            creator.connected 
+                                ? 'bg-emerald-500 text-white hover:bg-emerald-600' 
+                                : 'bg-white text-slate-900 hover:bg-indigo-50 hover:text-indigo-600'
+                        }">
+                            ${creator.connected ? '<i class="fa-solid fa-check mr-1"></i> Connected' : 'Connect'}
+                        </button>
+                    </div>
+                `;
+
+                // Add Card Click Listener to bring to front if clicked when not top card
+                cardEl.addEventListener('click', (e) => {
+                    // Don't trigger card cycling if clicking the Connect button directly
+                    if (e.target.closest('.connect-btn')) return;
+
+                    if (stackPos !== 0) {
+                        bringCardToFront(stackPos);
+                    }
+                });
+
+                // Attach Mouse Parallax Effect for Top Card
+                if (stackPos === 0) {
+                    setup3DTilt(cardEl);
+                }
+
+                stackContainer.appendChild(cardEl);
+            });
+
+            // Update footer indicator
+            document.getElementById('currentIndexText').innerText = stackOrder[0] + 1;
+            document.getElementById('totalCardsText').innerText = creatorsData.length;
+        }
+
+        function applyStackTransform(cardEl, stackPos, isHovered = false) {
+            // Staggered Cascade Offsets (X to right, Y down, Z depth back)
+            const xOffset = stackPos * (isHovered ? 38 : 28); 
+            const yOffset = stackPos * (isHovered ? 36 : 26);
+            const zOffset = -stackPos * 40;
+            const scale = Math.max(0.85, 1 - stackPos * 0.04);
+            const brightness = Math.max(0.5, 1 - stackPos * 0.12);
+
+            cardEl.style.zIndex = 50 - stackPos;
+            cardEl.style.transform = `translate3d(${xOffset}px, ${yOffset}px, ${zOffset}px) scale(${scale})`;
+            cardEl.style.filter = `brightness(${brightness})`;
+        }
+
+        function setup3DTilt(cardEl) {
+            cardEl.addEventListener('mousemove', (e) => {
+                const rect = cardEl.getBoundingClientRect();
+                const x = e.clientX - rect.left; // x pos within card
+                const y = e.clientY - rect.top;  // y pos within card
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                // Calculate rotation (max 12 deg)
+                const rotateX = ((y - centerY) / centerY) * -12;
+                const rotateY = ((x - centerX) / centerX) * 12;
+
+                cardEl.classList.add('is-tilting');
+                cardEl.style.transform = `translate3d(0px, 0px, 15px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale(1.02)`;
+                cardEl.style.boxShadow = `0 30px 60px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 255, 255, 0.2)`;
+            });
+
+            cardEl.addEventListener('mouseleave', () => {
+                cardEl.classList.remove('is-tilting');
+                applyStackTransform(cardEl, 0, isHoveringStack);
+                cardEl.style.boxShadow = `0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset`;
+            });
+        }
+
+        function bringCardToFront(clickedPos) {
+            // Rotate array slice to make clicked card top
+            const targetIndex = stackOrder[clickedPos];
+            stackOrder = [
+                ...stackOrder.slice(clickedPos),
+                ...stackOrder.slice(0, clickedPos)
+            ];
+            renderCards();
+        }
+
+        function cycleNext() {
+            // Push top card to back
+            const topCard = stackOrder.shift();
+            stackOrder.push(topCard);
+            renderCards();
+        }
+
+        function cyclePrev() {
+            // Bring back card to top
+            const backCard = stackOrder.pop();
+            stackOrder.unshift(backCard);
+            renderCards();
+        }
+
+        function handleConnectClick(event, creatorIndex) {
+            event.stopPropagation();
+            const creator = creatorsData[creatorIndex];
+            creator.connected = !creator.connected;
+
+            // Trigger Confetti Effect on Connecting
+            if (creator.connected) {
+                const btn = event.currentTarget;
+                const rect = btn.getBoundingClientRect();
+                const x = (rect.left + rect.width / 2) / window.innerWidth;
+                const y = (rect.top + rect.height / 2) / window.innerHeight;
+
+                confetti({
+                    particleCount: 40,
+                    spread: 60,
+                    origin: { x, y },
+                    colors: ['#6366f1', '#ec4899', '#10b981', '#ffffff']
+                });
+            }
+
+            renderCards();
+        }
+
+        stackContainer.addEventListener('mouseenter', () => {
+            isHoveringStack = true;
+            const cards = stackContainer.querySelectorAll('.card');
+            cards.forEach((cardEl) => {
+                const pos = parseInt(cardEl.dataset.stackPos);
+                if (pos !== 0 || !cardEl.classList.contains('is-tilting')) {
+                    applyStackTransform(cardEl, pos, true);
+                }
+            });
+        });
+
+        stackContainer.addEventListener('mouseleave', () => {
+            isHoveringStack = false;
+            const cards = stackContainer.querySelectorAll('.card');
+            cards.forEach((cardEl) => {
+                const pos = parseInt(cardEl.dataset.stackPos);
+                if (!cardEl.classList.contains('is-tilting')) {
+                    applyStackTransform(cardEl, pos, false);
+                }
+            });
+        });
+
+        // Navigation button listeners
+        document.getElementById('nextBtn').addEventListener('click', cycleNext);
+        document.getElementById('prevBtn').addEventListener('click', cyclePrev);
+        document.getElementById('shuffleBtn').addEventListener('click', () => {
+            // Shuffle creator stack order randomly
+            for (let i = stackOrder.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [stackOrder[i], stackOrder[j]] = [stackOrder[j], stackOrder[i]];
+            }
+            renderCards();
+        });
+
+        // Initialize design on window load
+        window.onload = () => {
+            renderCards();
+        };
+    </script>
+</body>
+</html>

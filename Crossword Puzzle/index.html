@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CutePuzz - Kids Crossword 🌟</title>
+    <!-- Google Fonts: Fredoka & Nunito for cutest kid vibe -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #FFF9F0;
+            --primary: #FF6B9A;
+            --secondary: #4ECDC4;
+            --accent: #FFD166;
+            --text-color: #4A4A4A;
+            --card-bg: #FFFFFF;
+            --cell-border: #E2E8F0;
+            --cell-active: #FFE3EC;
+            --cell-correct: #C7F9CC;
+            --cell-wrong: #FFADAD;
+            --shadow: 0 10px 25px rgba(255, 107, 154, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(#FFD166 10%, transparent 11%), radial-gradient(#4ECDC4 10%, transparent 11%);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.8rem;
+            color: var(--primary);
+            text-shadow: 3px 3px 0px var(--accent);
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #7A7A7A;
+        }
+
+        .level-badge {
+            background: var(--accent);
+            color: #5A4400;
+            font-family: 'Fredoka', sans-serif;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-top: 5px;
+            box-shadow: 0 3px 0 #E2B34B;
+        }
+
+        /* Level Selector */
+        .level-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .lvl-btn {
+            font-family: 'Fredoka', sans-serif;
+            background: white;
+            border: 3px solid var(--secondary);
+            padding: 10px 22px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 5px 0 var(--secondary);
+        }
+
+        .lvl-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .lvl-btn.active {
+            background: var(--secondary);
+            color: white;
+            box-shadow: 0 5px 0 #3AB8B0;
+        }
+
+        /* Main Game Layout */
+        .game-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+            align-items: flex-start;
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .board-container {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 25px;
+            box-shadow: var(--shadow);
+            border: 4px solid white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Crossword Grid */
+        .crossword-grid {
+            display: grid;
+            gap: 4px;
+            background: var(--secondary);
+            padding: 8px;
+            border-radius: 18px;
+        }
+
+        .cell-wrapper {
+            position: relative;
+            width: 50px;
+            height: 50px;
+        }
+
+        .cell {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+            border-radius: 12px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.5rem;
+            text-align: center;
+            text-transform: uppercase;
+            color: var(--primary);
+            font-weight: 600;
+            outline: none;
+            transition: background 0.2s, transform 0.1s;
+            cursor: pointer;
+            box-shadow: inset 0 -3px 0 var(--cell-border);
+        }
+
+        .cell:focus {
+            background: var(--cell-active);
+            box-shadow: inset 0 -3px 0 var(--primary);
+            transform: scale(1.05);
+            z-index: 2;
+        }
+
+        .cell.blocked {
+            background: #2D3748;
+            box-shadow: none;
+            pointer-events: none;
+            border-radius: 8px;
+        }
+
+        .cell.correct {
+            background: var(--cell-correct) !important;
+            color: #2D6A4F;
+        }
+
+        .cell.wrong {
+            background: var(--cell-wrong) !important;
+            color: #9B2226;
+            animation: shake 0.3s;
+        }
+
+        .cell-number {
+            position: absolute;
+            top: 3px;
+            left: 5px;
+            font-size: 0.65rem;
+            font-family: 'Fredoka', sans-serif;
+            color: #888;
+            pointer-events: none;
+            z-index: 3;
+            font-weight: 700;
+        }
+
+        /* Clues Section */
+        .clues-container {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 25px;
+            box-shadow: var(--shadow);
+            border: 4px solid white;
+            flex: 1;
+            min-width: 280px;
+            max-width: 380px;
+        }
+
+        .clues-container h3 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.4rem;
+            color: var(--primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .clue-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .clue-list li {
+            padding: 8px 10px;
+            margin-bottom: 6px;
+            background: #FFF5F8;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .clue-list li span {
+            background: var(--primary);
+            color: white;
+            font-family: 'Fredoka', sans-serif;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+        }
+
+        /* Action Buttons */
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .action-btn {
+            flex: 1;
+            font-family: 'Fredoka', sans-serif;
+            padding: 12px;
+            border-radius: 15px;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+        }
+
+        .btn-check {
+            background: var(--secondary);
+            color: white;
+            box-shadow: 0 4px 0 #3AB8B0;
+        }
+
+        .btn-clear {
+            background: #FFD166;
+            color: #5A4400;
+            box-shadow: 0 4px 0 #E2B34B;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .action-btn:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+
+        /* Modal / Message popup */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 100;
+        }
+
+        .modal.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: white;
+            padding: 35px;
+            border-radius: 30px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            animation: popUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 350px;
+            width: 90%;
+        }
+
+        .modal-card h2 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .modal-card p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        @keyframes popUp {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25%, 75% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+        }
+
+        @media(max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .cell-wrapper { width: 42px; height: 42px; }
+            .cell { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>✨ CutePuzz ✨</h1>
+        <div class="subtitle">Cute Kids Crossword (Hindi & English Mix)</div>
+        <div id="puzzleBadge" class="level-badge">Puzzle #1 of Easy</div>
+    </header>
+
+    <!-- Level Selector -->
+    <div class="level-container">
+        <button class="lvl-btn active" onclick="switchLevel('easy')">Easy 🟢</button>
+        <button class="lvl-btn" onclick="switchLevel('medium')">Medium 🟡</button>
+        <button class="lvl-btn" onclick="switchLevel('hard')">Hard 🔴</button>
+    </div>
+
+    <div class="game-wrapper">
+        <!-- Board -->
+        <div class="board-container">
+            <div id="grid" class="crossword-grid"></div>
+            <div class="actions">
+                <button class="action-btn btn-check" onclick="checkAnswers()">Check! 🌟</button>
+                <button class="action-btn btn-clear" onclick="clearBoard()">Reset 🧹</button>
+            </div>
+        </div>
+
+        <!-- Clues -->
+        <div class="clues-container">
+            <h3>📝 Clues / संकेत</h3>
+            <ul class="clue-list" id="clueList"></ul>
+        </div>
+    </div>
+
+    <!-- Win Modal -->
+    <div class="modal" id="winModal">
+        <div class="modal-card">
+            <h2>🎉 Yay! Super! 🎉</h2>
+            <p>You solved the puzzle like a champion! ⭐</p>
+            <button class="action-btn btn-check" onclick="nextPuzzle()">Next Puzzle! 🚀</button>
+        </div>
+    </div>
+
+    <script>
+        // Har level ke liye multiple dynamic/predefined puzzle arrays
+        const puzzleData = {
+            easy: [
+                {
+                    size: 5,
+                    solution: [
+                        ['A', 'P', 'P', 'L', 'E'],
+                        ['#', '#', 'P', '#', '#'],
+                        ['C', 'A', 'T', '#', '#'],
+                        ['#', '#', 'E', '#', '#'],
+                        ['D', 'O', 'G', '#', '#']
+                    ],
+                    numbers: { '0-0': 1, '2-0': 2, '4-0': 3 },
+                    clues: {
+                        across: ["1. Red fruit 🍎", "2. Meowing pet 🐱", "3. Barking pet 🐶"],
+                        down: []
+                    }
+                },
+                {
+                    size: 5,
+                    solution: [
+                        ['S', 'U', 'N', '#', '#'],
+                        ['#', 'N', '#', '#', '#'],
+                        ['F', 'I', 'S', 'H', '#'],
+                        ['#', 'C', '#', '#', '#'],
+                        ['#', 'E', '#', '#', '#']
+                    ],
+                    numbers: { '0-0': 1, '2-0': 2 },
+                    clues: {
+                        across: ["1. Bright day light ☀️", "2. Swims in water 🐠"],
+                        down: []
+                    }
+                }
+            ],
+            medium: [
+                {
+                    size: 6,
+                    solution: [
+                        ['S', 'U', 'N', '', '', ''],
+                        ['', '', 'O', '', '', ''],
+                        ['M', 'O', 'O', 'N', '', ''],
+                        ['', '', 'N', '', '', ''],
+                        ['', '', 'E', 'S', 'T', 'A'],
+                        ['', '', '#', '#', '#', '#']
+                    ],
+                    numbers: { '0-0': 1, '2-0': 2, '4-2': 3 },
+                    clues: {
+                        across: ["1. Daytime star ☀️", "2. Night glowing orb 🌙", "3. Star/playful token"],
+                        down: []
+                    }
+                },
+                {
+                    size: 5,
+                    solution: [
+                        ['B', 'O', 'O', 'K', '#'],
+                        ['#', '#', 'P', '#', '#'],
+                        ['P', 'E', 'N', '#', '#'],
+                        ['#', '#', '#', '#', '#'],
+                        ['#', '#', '#', '#', '#']
+                    ],
+                    numbers: { '0-0': 1, '2-0': 2 },
+                    clues: {
+                        across: ["1. Read me everyday 📖", "2. Writes your story 🖊️"],
+                        down: []
+                    }
+                }
+            ],
+            hard: [
+                {
+                    size: 5,
+                    solution: [
+                        ['K', 'I', 'T', 'E', '#'],
+                        ['#', 'N', '#', '#', '#'],
+                        ['S', 'H', 'E', 'R', '#'],
+                        ['#', 'D', '#', '#', '#'],
+                        ['#', 'I', 'A', 'N', '#']
+                    ],
+                    numbers: { '0-0': 1, '2-0': 2 },
+                    clues: {
+                        across: ["1. Flies high in sky 🪁", "2. Jungle ka raja (SHER) 🦁"],
+                        down: ["1. Special secret clue"]
+                    }
+                },
+                {
+                    size: 5,
+                    solution: [
+                        ['T', 'I', 'G', 'E', 'R'],
+                        ['#', 'N', '#', '#', '#'],
+                        ['#', 'D', 'I', 'L', '#'], // Dil = Heart in Hindi/Eng mix
+                        ['#', 'I', '#', '#', '#'],
+                        ['#', 'A', '#', '#', '#']
+                    ],
+                    numbers: { '0-0': 1, '2-1': 2 },
+                    clues: {
+                        across: ["1. Striped jungle cat 🐅", "2. Pyar wala 'DIL' ❤️"],
+                        down: []
+                    }
+                }
+            ]
+        };
+
+        let currentLevel = 'easy';
+        let currentIndex = 0;
+        let currentPuzzle = puzzleData[currentLevel][currentIndex];
+
+        function switchLevel(lvl) {
+            currentLevel = lvl;
+            currentIndex = 0;
+            document.querySelectorAll('.lvl-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            loadPuzzle();
+        }
+
+        function loadPuzzle() {
+            currentPuzzle = puzzleData[currentLevel][currentIndex];
+            document.getElementById('puzzleBadge').innerText = `Puzzle #${currentIndex + 1} of ${currentLevel.toUpperCase()}`;
+            renderGame();
+        }
+
+        function nextPuzzle() {
+            document.getElementById('winModal').classList.remove('show');
+            // Next puzzle index ya cyclic rotate karo
+            currentIndex = (currentIndex + 1) % puzzleData[currentLevel].length;
+            loadPuzzle();
+        }
+
+        function renderGame() {
+            const gridEl = document.getElementById('grid');
+            const clueEl = document.getElementById('clueList');
+            const size = currentPuzzle.size;
+            
+            gridEl.style.gridTemplateColumns = `repeat(${size}, 50px)`;
+            gridEl.innerHTML = '';
+            
+            const sol = currentPuzzle.solution;
+            const nums = currentPuzzle.numbers || {};
+
+            for (let r = 0; r < size; r++) {
+                for (let c = 0; c < size; c++) {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'cell-wrapper';
+
+                    if (sol[r][c] === '#') {
+                        const blockDiv = document.createElement('div');
+                        blockDiv.className = 'cell blocked';
+                        wrapper.appendChild(blockDiv);
+                    } else {
+                        const num = nums[`${r}-${c}`];
+                        if (num) {
+                            const numSpan = document.createElement('span');
+                            numSpan.className = 'cell-number';
+                            numSpan.innerText = num;
+                            wrapper.appendChild(numSpan);
+                        }
+
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.maxLength = 1;
+                        input.className = 'cell';
+                        input.dataset.row = r;
+                        input.dataset.col = c;
+                        input.dataset.ans = sol[r][c];
+
+                        input.addEventListener('input', (e) => {
+                            e.target.value = e.target.value.toUpperCase();
+                            if (e.target.value.length === 1) {
+                                focusNext(r, c, size);
+                            }
+                        });
+
+                        input.addEventListener('keydown', (e) => {
+                            if (e.key === 'Backspace' && e.target.value === '') {
+                                focusPrev(r, c, size);
+                            }
+                        });
+
+                        wrapper.appendChild(input);
+                    }
+                    gridEl.appendChild(wrapper);
+                }
+            }
+
+            // Render Clues
+            clueEl.innerHTML = '';
+            let allClues = [...currentPuzzle.clues.across, ...currentPuzzle.clues.down];
+            allClues.forEach(clue => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span>Hint</span> ${clue}`;
+                clueEl.appendChild(li);
+            });
+            if(allClues.length === 0) {
+                clueEl.innerHTML = `<li><span>Info</span> Fill the cute grid letters! ✨</li>`;
+            }
+        }
+
+        function focusNext(r, c, size) {
+            let nextC = c + 1;
+            let nextR = r;
+            if (nextC >= size) { nextC = 0; nextR++; }
+            if (nextR < size) {
+                const el = document.querySelector(`.cell[data-row="${nextR}"][data-col="${nextC}"]`);
+                if (el) el.focus();
+            }
+        }
+
+        function focusPrev(r, c, size) {
+            let prevC = c - 1;
+            let prevR = r;
+            if (prevC < 0) { prevC = size - 1; prevR--; }
+            if (prevR >= 0) {
+                const el = document.querySelector(`.cell[data-row="${prevR}"][data-col="${prevC}"]`);
+                if (el) el.focus();
+            }
+        }
+
+        function checkAnswers() {
+            const inputs = document.querySelectorAll('.cell[data-ans]');
+            let allCorrect = true;
+            let filledCount = 0;
+
+            inputs.forEach(input => {
+                const userVal = input.value.toUpperCase();
+                const targetVal = input.dataset.ans.toUpperCase();
+                
+                input.classList.remove('correct', 'wrong');
+                if (userVal !== '') {
+                    filledCount++;
+                    if (userVal === targetVal) {
+                        input.classList.add('correct');
+                    } else {
+                        input.classList.add('wrong');
+                        allCorrect = false;
+                    }
+                } else {
+                    allCorrect = false;
+                }
+            });
+
+            if (allCorrect && filledCount > 0) {
+                setTimeout(() => {
+                    document.getElementById('winModal').classList.add('show');
+                }, 400);
+            }
+        }
+
+        function clearBoard() {
+            document.querySelectorAll('.cell[data-ans]').forEach(input => {
+                input.value = '';
+                input.classList.remove('correct', 'wrong');
+            });
+        }
+
+        // Initial load
+        loadPuzzle();
+    </script>
+</body>
+</html>

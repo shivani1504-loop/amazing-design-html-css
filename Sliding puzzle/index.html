@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ Cute Puzzle Wonderland! 🧩</title>
+    <!-- Cute Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #ffd6e8;
+            --board-bg: #ffffff;
+            --tile-bg: #ff94b9;
+            --tile-hover: #ff70a6;
+            --tile-shadow: #e65c92;
+            --text-color: #5d4037;
+            --grid-size: 4;
+            --tile-size: 75px;
+            --gap: 10px;
+            --font-size: 2rem;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Fredoka', cursive, sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #ffdee9 0%, #b5fffc 100%);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        /* Cute Title */
+        h1 {
+            font-size: 2.5rem;
+            color: #ff477e;
+            text-shadow: 3px 3px 0px #ffffff, 5px 5px 0px #ff9ebb;
+            margin-bottom: 10px;
+            text-align: center;
+            animation: bounce 2s infinite alternate;
+        }
+
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-8px); }
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 20px;
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(255, 105, 180, 0.2);
+            border: 4px solid #ffffff;
+            backdrop-filter: blur(10px);
+            max-width: 95vw;
+        }
+
+        /* Control Panel / Sections */
+        .section-box {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .pill-group {
+            display: flex;
+            background: #ffe5ec;
+            padding: 5px;
+            border-radius: 20px;
+            border: 2px solid #ffb3c6;
+        }
+
+        .pill-btn {
+            border: none;
+            background: transparent;
+            padding: 8px 16px;
+            border-radius: 15px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #ff477e;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .pill-btn.active {
+            background: #ff477e;
+            color: white;
+            box-shadow: 0 4px 10px rgba(255, 71, 126, 0.4);
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            background: #fff0f5;
+            padding: 10px 15px;
+            border-radius: 20px;
+            border: 2px dashed #ff85a2;
+        }
+
+        .stat-box {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #702963;
+        }
+
+        /* Puzzle Board */
+        .puzzle-board {
+            position: relative;
+            background: #ffffff;
+            border: 5px solid #ffc2d1;
+            border-radius: 25px;
+            padding: var(--gap);
+            box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.05), 0 10px 20px rgba(255, 182, 193, 0.4);
+            transition: width 0.3s, height 0.3s;
+        }
+
+        /* Kawaii Tile Styling */
+        .tile {
+            position: absolute;
+            width: var(--tile-size);
+            height: var(--tile-size);
+            background: linear-gradient(145deg, #ff9ebb, #ff70a6);
+            color: #ffffff;
+            font-size: var(--font-size);
+            font-weight: 700;
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 6px 0 var(--tile-shadow), 0 8px 15px rgba(0, 0, 0, 0.1);
+            border: 3px solid #ffffff;
+            text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.15);
+            /* Smooth Dynamic Drag & Move Effect */
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s;
+            will-change: transform;
+        }
+
+        .tile:active {
+            transform: scale(0.95);
+        }
+
+        /* Color variations for extra cuteness */
+        .tile:nth-child(2n) {
+            background: linear-gradient(145deg, #a0c4ff, #7400b8);
+            background: linear-gradient(145deg, #9bf6ff, #4ea8de);
+            box-shadow: 0 6px 0 #3a86ff;
+        }
+        
+        .tile:nth-child(3n) {
+            background: linear-gradient(145deg, #caffbf, #52b788);
+            box-shadow: 0 6px 0 #2a9d8f;
+        }
+
+        .tile:nth-child(5n) {
+            background: linear-gradient(145deg, #ffd6a5, #ff9f1c);
+            box-shadow: 0 6px 0 #e76f51;
+        }
+
+        .tile.correct {
+            border: 3px solid #ffeb3b;
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(145deg, #ff477e, #ff70a6);
+            box-shadow: 0 6px 0 #d62839, 0 10px 20px rgba(255, 71, 126, 0.4);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .action-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #d62839;
+        }
+
+        /* Winner Modal */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 192, 203, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(6px);
+            z-index: 100;
+        }
+
+        .modal.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            padding: 35px 25px;
+            border-radius: 35px;
+            text-align: center;
+            border: 6px solid #ff85a2;
+            box-shadow: 0 20px 40px rgba(255, 105, 180, 0.3);
+            max-width: 90%;
+            width: 320px;
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); }
+            100% { transform: scale(1); }
+        }
+
+        .modal-content h2 {
+            font-size: 2.2rem;
+            color: #ff477e;
+            margin-bottom: 10px;
+        }
+
+        .modal-content p {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            color: #6c5ce7;
+            font-weight: 600;
+        }
+
+        /* Mobile Optimization */
+        @media (max-width: 480px) {
+            h1 { font-size: 2rem; }
+            .container { padding: 15px 10px; }
+            .pill-btn { padding: 6px 12px; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>✨ Cute Puzzle! 🧩</h1>
+
+    <div class="container">
+        <!-- Modes & Levels Control Sections -->
+        <div class="section-box">
+            <!-- Mode Selector (Numbers vs Letters) -->
+            <div class="pill-group">
+                <button class="pill-btn active" onclick="setMode('numbers', this)">1️⃣ Numbers</button>
+                <button class="pill-btn" onclick="setMode('letters', this)">🔤 Letters</button>
+            </div>
+
+            <!-- Difficulty Levels Selector -->
+            <div class="pill-group">
+                <button class="pill-btn" onclick="setLevel(3, this)">Easy 3x3</button>
+                <button class="pill-btn active" onclick="setLevel(4, this)">Medium 4x4</button>
+                <button class="pill-btn" onclick="setLevel(5, this)">Hard 5x5</button>
+            </div>
+        </div>
+
+        <!-- Stats Display -->
+        <div class="stats-bar">
+            <div class="stat-box">🐾 Moves: <span id="move-count">0</span></div>
+            <div class="stat-box">⏰ Time: <span id="timer">00:00</span></div>
+        </div>
+
+        <!-- Dynamic Puzzle Board -->
+        <div class="puzzle-board" id="board"></div>
+
+        <!-- Shuffle Button -->
+        <button class="action-btn" onclick="initGame()">🔀 Shuffle Game!</button>
+    </div>
+
+    <!-- Cute Winner Pop-up -->
+    <div class="modal" id="win-modal">
+        <div class="modal-content">
+            <h2>🎉 Yay! You Won! 🎈</h2>
+            <p id="win-stats">Moves: 0 | Time: 00:00</p>
+            <button class="action-btn" onclick="closeModal(); initGame();">Play Again! 🚀</button>
+        </div>
+    </div>
+
+    <script>
+        let gridSize = 4; // Default Medium (4x4)
+        let mode = 'numbers'; // 'numbers' or 'letters'
+        let tileCount = gridSize * gridSize;
+        
+        const board = document.getElementById('board');
+        const moveCountEl = document.getElementById('move-count');
+        const timerEl = document.getElementById('timer');
+        const winModal = document.getElementById('win-modal');
+        const winStats = document.getElementById('win-stats');
+
+        let tiles = [];
+        let moves = 0;
+        let timer = null;
+        let seconds = 0;
+        let isGameRunning = false;
+
+        // Letters Mapping Array
+        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+        // Sound Effects (Web Audio API - Cute Chimes)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(freq, type = 'sine', duration = 0.1) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        // Set Difficulty Level
+        function setLevel(size, btn) {
+            gridSize = size;
+            tileCount = gridSize * gridSize;
+            
+            // Update Active UI Button
+            btn.parentElement.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            adjustTileDimensions();
+            initGame();
+        }
+
+        // Set Game Mode (Numbers or Letters)
+        function setMode(selectedMode, btn) {
+            mode = selectedMode;
+            
+            // Update Active UI Button
+            btn.parentElement.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            initGame();
+        }
+
+        // Adjust Tile sizes dynamically according to Grid Size & Screen Width
+        function adjustTileDimensions() {
+            const screenWidth = window.innerWidth;
+            let tileSize = 75;
+            let gap = 10;
+            let fontSize = "2rem";
+
+            if (gridSize === 3) {
+                tileSize = screenWidth < 480 ? 80 : 95;
+                fontSize = "2.5rem";
+            } else if (gridSize === 4) {
+                tileSize = screenWidth < 480 ? 65 : 75;
+                fontSize = "2rem";
+            } else if (gridSize === 5) {
+                tileSize = screenWidth < 480 ? 50 : 60;
+                fontSize = "1.4rem";
+                gap = 6;
+            }
+
+            document.documentElement.style.setProperty('--grid-size', gridSize);
+            document.documentElement.style.setProperty('--tile-size', `${tileSize}px`);
+            document.documentElement.style.setProperty('--gap', `${gap}px`);
+            document.documentElement.style.setProperty('--font-size', fontSize);
+
+            board.style.width = `calc(${tileSize}px * ${gridSize} + ${gap}px * ${gridSize + 1})`;
+            board.style.height = `calc(${tileSize}px * ${gridSize} + ${gap}px * ${gridSize + 1})`;
+        }
+
+        // Initialize Game
+        function initGame() {
+            moves = 0;
+            seconds = 0;
+            isGameRunning = false;
+            clearInterval(timer);
+            moveCountEl.innerText = moves;
+            timerEl.innerText = "00:00";
+            adjustTileDimensions();
+            
+            do {
+                generateSolvableTiles();
+            } while (isSolved());
+
+            renderBoard();
+        }
+
+        // Solvable Shuffle Generator
+        function generateSolvableTiles() {
+            tiles = Array.from({length: tileCount - 1}, (_, i) => i + 1);
+            tiles.push(0); // Empty Slot = 0
+
+            // Fisher-Yates Shuffle
+            for (let i = tiles.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
+            }
+
+            // Fix unsolvable state
+            if (!isSolvable(tiles)) {
+                let idx1 = tiles.findIndex(x => x !== 0);
+                let idx2 = tiles.findIndex((x, i) => x !== 0 && i !== idx1);
+                [tiles[idx1], tiles[idx2]] = [tiles[idx2], tiles[idx1]];
+            }
+        }
+
+        // Solvability Logic Check
+        function isSolvable(puzzle) {
+            let inversions = 0;
+            let emptyRowFromBottom = 0;
+
+            for (let i = 0; i < puzzle.length; i++) {
+                if (puzzle[i] === 0) {
+                    emptyRowFromBottom = gridSize - Math.floor(i / gridSize);
+                    continue;
+                }
+                for (let j = i + 1; j < puzzle.length; j++) {
+                    if (puzzle[j] !== 0 && puzzle[i] > puzzle[j]) {
+                        inversions++;
+                    }
+                }
+            }
+
+            if (gridSize % 2 !== 0) {
+                return inversions % 2 === 0;
+            } else {
+                if (emptyRowFromBottom % 2 === 0) {
+                    return inversions % 2 !== 0;
+                } else {
+                    return inversions % 2 === 0;
+                }
+            }
+        }
+
+        // Calculate Position on Screen
+        function getTilePosition(index) {
+            const row = Math.floor(index / gridSize);
+            const col = index % gridSize;
+            const tileSize = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tile-size'));
+            const gap = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--gap'));
+            
+            const x = col * (tileSize + gap) + gap;
+            const y = row * (tileSize + gap) + gap;
+            return { x, y };
+        }
+
+        // Convert number value to label (Number or Letter)
+        function getTileLabel(val) {
+            return mode === 'letters' ? alphabet[val - 1] : val;
+        }
+
+        // Render Initial Board
+        function renderBoard() {
+            board.innerHTML = '';
+            tiles.forEach((num, index) => {
+                if (num !== 0) {
+                    const tile = document.createElement('div');
+                    tile.className = `tile ${num === index + 1 ? 'correct' : ''}`;
+                    tile.innerText = getTileLabel(num);
+                    tile.dataset.value = num;
+                    
+                    const pos = getTilePosition(index);
+                    tile.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+
+                    tile.addEventListener('click', () => handleTileClick(num));
+                    board.appendChild(tile);
+                }
+            });
+        }
+
+        // Dynamic Position Update with Smooth Drag Transition
+        function updateBoardUI() {
+            const tileElements = board.getElementsByClassName('tile');
+            Array.from(tileElements).forEach(tile => {
+                const val = parseInt(tile.dataset.value);
+                const currentIndex = tiles.indexOf(val);
+                const pos = getTilePosition(currentIndex);
+
+                tile.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+
+                if (val === currentIndex + 1) {
+                    tile.classList.add('correct');
+                } else {
+                    tile.classList.remove('correct');
+                }
+            });
+        }
+
+        // Tile Movement Click Handler
+        function handleTileClick(num) {
+            const tileIdx = tiles.indexOf(num);
+            const emptyIdx = tiles.indexOf(0);
+
+            if (isAdjacent(tileIdx, emptyIdx)) {
+                if (!isGameRunning) startTimer();
+
+                [tiles[tileIdx], tiles[emptyIdx]] = [tiles[emptyIdx], tiles[tileIdx]];
+                
+                moves++;
+                moveCountEl.innerText = moves;
+                playSound(400, 'sine', 0.08); // Cute Bounce Sound
+
+                updateBoardUI();
+
+                if (isSolved()) {
+                    handleWin();
+                }
+            } else {
+                playSound(180, 'triangle', 0.1); // Oops Sound
+            }
+        }
+
+        function isAdjacent(idx1, idx2) {
+            const row1 = Math.floor(idx1 / gridSize), col1 = idx1 % gridSize;
+            const row2 = Math.floor(idx2 / gridSize), col2 = idx2 % gridSize;
+            return Math.abs(row1 - row2) + Math.abs(col1 - col2) === 1;
+        }
+
+        function isSolved() {
+            for (let i = 0; i < tileCount - 1; i++) {
+                if (tiles[i] !== i + 1) return false;
+            }
+            return true;
+        }
+
+        function startTimer() {
+            isGameRunning = true;
+            timer = setInterval(() => {
+                seconds++;
+                const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+                const secs = String(seconds % 60).padStart(2, '0');
+                timerEl.innerText = `${mins}:${secs}`;
+            }, 1000);
+        }
+
+        function handleWin() {
+            clearInterval(timer);
+            // Victory Melody
+            setTimeout(() => playSound(523, 'sine', 0.1), 0);
+            setTimeout(() => playSound(659, 'sine', 0.1), 100);
+            setTimeout(() => playSound(783, 'sine', 0.2), 200);
+
+            setTimeout(() => {
+                winStats.innerText = `Moves: ${moves} | Time: ${timerEl.innerText}`;
+                winModal.classList.add('show');
+            }, 300);
+        }
+
+        function closeModal() {
+            winModal.classList.remove('show');
+        }
+
+        window.addEventListener('resize', () => {
+            adjustTileDimensions();
+            updateBoardUI();
+        });
+
+        // Start Game
+        initGame();
+    </script>
+</body>
+</html>

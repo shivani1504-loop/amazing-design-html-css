@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Infographic Flow</title>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            overflow-x: hidden;
+        }
+
+        /* Header Animations */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 1s ease-out forwards;
+        }
+
+        .header h1 {
+            font-size: 38px;
+            font-weight: 300;
+            color: #555555;
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            font-size: 14px;
+            color: #888888;
+            letter-spacing: 3px;
+            margin-top: 5px;
+        }
+
+        /* Container & Perspective */
+        .infographic-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 40px;
+            max-width: 1000px;
+            width: 100%;
+            perspective: 1000px;
+        }
+
+        /* Animated Connecting Line */
+        .line-connector {
+            position: absolute;
+            top: 250px;
+            left: 15%;
+            width: 0%; /* Initial width for draw animation */
+            height: 2px;
+            background: linear-gradient(90deg, #d93832, #f39c12, #2c3e50);
+            z-index: 1;
+            animation: drawLine 1.5s 0.5s ease-in-out forwards;
+        }
+
+        @keyframes drawLine {
+            to { width: 70%; }
+        }
+
+        /* Card Structure & Entrance */
+        .card {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 260px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(50px) scale(0.9);
+            animation: cardEntrance 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            transition: transform 0.4s ease;
+            cursor: pointer;
+        }
+
+        /* Staggered Delay for Cards */
+        .card.red { animation-delay: 0.3s; }
+        .card.yellow { animation-delay: 0.6s; }
+        .card.blue { animation-delay: 0.9s; }
+
+        @keyframes cardEntrance {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .card:hover {
+            z-index: 10;
+        }
+
+        /* Arc Container & Smooth Hover Effects */
+        .arc-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.4s ease;
+        }
+
+        .card:hover .arc-container {
+            transform: scale(1.08) rotate(5deg);
+        }
+
+        .arc {
+            position: absolute;
+            width: 200px;
+            height: 100px;
+            transition: all 0.4s ease;
+        }
+
+        .arc-bottom {
+            bottom: 0;
+            border-bottom-left-radius: 100px;
+            border-bottom-right-radius: 100px;
+        }
+
+        .arc-top {
+            top: 0;
+            border-top-left-radius: 100px;
+            border-top-right-radius: 100px;
+        }
+
+        /* Colors & Glow Effects */
+        .card.red .arc-bottom { background-color: #d93832; }
+        .card.red .vertical-line, .card.red .dot { background-color: #d93832; }
+        .card.red h3, .card.red .icon { color: #d93832; }
+        .card.red:hover .inner-circle { box-shadow: 0 10px 30px rgba(217, 56, 50, 0.4); }
+
+        .card.yellow .arc-top { background-color: #f39c12; }
+        .card.yellow .vertical-line, .card.yellow .dot { background-color: #f39c12; }
+        .card.yellow h3, .card.yellow .icon { color: #f39c12; }
+        .card.yellow:hover .inner-circle { box-shadow: 0 10px 30px rgba(243, 156, 18, 0.4); }
+
+        .card.blue .arc-bottom { background-color: #2c3e50; }
+        .card.blue .vertical-line, .card.blue .dot { background-color: #2c3e50; }
+        .card.blue h3, .card.blue .icon { color: #2c3e50; }
+        .card.blue:hover .inner-circle { box-shadow: 0 10px 30px rgba(44, 62, 80, 0.4); }
+
+        /* Inner Circle Styling & Animations */
+        .inner-circle {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            z-index: 3;
+            transition: all 0.4s ease;
+        }
+
+        /* Rotating Orbit Ring on Hover */
+        .inner-circle::after {
+            content: '';
+            position: absolute;
+            top: -6px; left: -6px; right: -6px; bottom: -6px;
+            border-radius: 50%;
+            border: 2px dashed transparent;
+            transition: all 0.4s ease;
+        }
+
+        .card.red:hover .inner-circle::after { border-color: #d93832; animation: spin 8s linear infinite; }
+        .card.yellow:hover .inner-circle::after { border-color: #f39c12; animation: spin 8s linear infinite; }
+        .card.blue:hover .inner-circle::after { border-color: #2c3e50; animation: spin 8s linear infinite; }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        .icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+            transition: transform 0.4s ease;
+        }
+
+        .card:hover .icon {
+            transform: scale(1.2) translateY(-3px);
+        }
+
+        .circle-text {
+            font-size: 10px;
+            color: #777;
+            line-height: 1.2;
+        }
+
+        /* Vertical Line Animation */
+        .vertical-line {
+            width: 2px;
+            height: 50px;
+            transform-origin: top;
+            transition: transform 0.4s ease;
+        }
+
+        .card:hover .vertical-line {
+            transform: scaleY(1.15);
+        }
+
+        /* Glowing Pulse Dot */
+        .dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            margin-bottom: 25px;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover .dot {
+            transform: scale(1.3);
+        }
+
+        .dot::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            border-radius: 50%;
+            background: inherit;
+            animation: pulseGlow 2s infinite ease-in-out;
+            z-index: -1;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(2.2); opacity: 0; }
+        }
+
+        /* Text Content Animations */
+        .content {
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover .content {
+            transform: translateY(-5px);
+        }
+
+        .content h3 {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            transition: letter-spacing 0.3s ease;
+        }
+
+        .card:hover .content h3 {
+            letter-spacing: 0.5px;
+        }
+
+        .content p {
+            font-size: 11px;
+            color: #a0a0a0;
+            line-height: 1.5;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">       
+        <p>PROCESS FLOW DESIGN</p>
+    </div>
+
+    <div class="infographic-container">
+        <!-- Connecting Line -->
+        <div class="line-connector"></div>
+
+        <!-- RED CARD -->
+        <div class="card red">
+            <div class="arc-container">
+                <div class="arc arc-bottom"></div>
+                <div class="inner-circle">
+                    <i class="fa-solid fa-lightbulb icon"></i>
+                    <div class="circle-text">Lorem ipsum dolor sit amet, consectetur</div>
+                </div>
+            </div>
+            <div class="vertical-line"></div>
+            <div class="dot"></div>
+            <div class="content">
+                <h3>OPTION 01</h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.</p>
+            </div>
+        </div>
+
+        <!-- YELLOW CARD -->
+        <div class="card yellow">
+            <div class="arc-container">
+                <div class="arc arc-top"></div>
+                <div class="inner-circle">
+                    <i class="fa-solid fa-gear icon"></i>
+                    <div class="circle-text">Lorem ipsum dolor sit amet, consectetur</div>
+                </div>
+            </div>
+            <div class="vertical-line"></div>
+            <div class="dot"></div>
+            <div class="content">
+                <h3>OPTION 02</h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.</p>
+            </div>
+        </div>
+
+        <!-- BLUE CARD -->
+        <div class="card blue">
+            <div class="arc-container">
+                <div class="arc arc-bottom"></div>
+                <div class="inner-circle">
+                    <i class="fa-solid fa-rocket icon"></i>
+                    <div class="circle-text">Lorem ipsum dolor sit amet, consectetur</div>
+                </div>
+            </div>
+            <div class="vertical-line"></div>
+            <div class="dot"></div>
+            <div class="content">
+                <h3>OPTION 03</h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3D Mouse Tilt Script -->
+    <script>
+        const cards = document.querySelectorAll('.card');
+
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left - (rect.width / 2);
+                const y = e.clientY - rect.top - (rect.height / 2);
+
+                const rotateX = (y / (rect.height / 2)) * -10;
+                const rotateY = (x / (rect.width / 2)) * 10;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
+            });
+        });
+    </script>
+</body>
+</html>

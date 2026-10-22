@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cute Sokoban Infinite Adventure! 🎈</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #fef0f5;
+            --card-bg: #ffffff;
+            --accent-color: #ff7675;
+            --text-color: #2d3436;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 15px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-family: 'Fredoka One', cursive;
+            color: #ff6b6b;
+            font-size: 2.2rem;
+            margin: 5px 0 10px 0;
+            text-shadow: 2px 2px 0px #ffeaa7;
+            text-align: center;
+        }
+
+        .level-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .btn {
+            background-color: #a29bfe;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #6c5ce7;
+            transition: all 0.1s ease;
+        }
+
+        .btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #6c5ce7;
+        }
+
+        .btn.active {
+            background-color: #fd79a8;
+            box-shadow: 0 4px 0 #e84393;
+        }
+
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 380px;
+            background: white;
+            padding: 10px 18px;
+            border-radius: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .game-board {
+            display: grid;
+            gap: 2px;
+            background: #fdcb6e;
+            padding: 10px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border: 4px solid #ffeaa7;
+        }
+
+        .cell {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            border-radius: 8px;
+            background-color: #fff8e7;
+        }
+
+        .wall {
+            background-color: #74b9ff;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+        }
+
+        .target {
+            background-color: #ffeaa7;
+        }
+
+        .controls {
+            margin-top: 15px;
+            display: grid;
+            grid-template-areas: 
+                ". up ."
+                "left down right";
+            gap: 8px;
+        }
+
+        .btn-ctrl {
+            width: 50px;
+            height: 50px;
+            font-size: 1.3rem;
+            border-radius: 15px;
+            background: #55efc4;
+            box-shadow: 0 4px 0 #00b894;
+            border: none;
+            cursor: pointer;
+            color: #2d3436;
+            font-weight: bold;
+        }
+
+        .btn-ctrl:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #00b894;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .legend {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            display: flex;
+            gap: 10px;
+            color: #636e72;
+        }
+
+        @media (max-width: 400px) {
+            .cell {
+                width: 35px;
+                height: 35px;
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Sokoban Kids! 🧸</h1>
+
+    <!-- Level Difficulty Selector -->
+    <div class="level-selector">
+        <button class="btn active" onclick="setDifficulty('easy')">Easy 🟢</button>
+        <button class="btn" onclick="setDifficulty('medium')">Medium 🟡</button>
+        <button class="btn" onclick="setDifficulty('hard')">Hard 🔴</button>
+    </div>
+
+    <!-- Info Bar -->
+    <div class="info-panel">
+        <div>Stage: <span id="stageNum" style="color: #6c5ce7;">#1</span></div>
+        <div>Moves: <span id="moveCount" style="color: #e84393;">0</span></div>
+        <button class="btn" onclick="generateNewLevel()" style="padding: 4px 10px; font-size: 0.8rem; background: #fab1a0; box-shadow: 0 3px 0 #e17055;">Reset 🔄</button>
+    </div>
+
+    <!-- Game Board -->
+    <div id="board" class="game-board"></div>
+
+    <!-- Screen Controls -->
+    <div class="controls">
+        <button class="btn-ctrl" style="grid-area: up;" onclick="movePlayer('Up')">⬆️</button>
+        <button class="btn-ctrl" style="grid-area: left;" onclick="movePlayer('Left')">⬅️</button>
+        <button class="btn-ctrl" style="grid-area: down;" onclick="movePlayer('Down')">⬇️</button>
+        <button class="btn-ctrl" style="grid-area: right;" onclick="movePlayer('Right')">➡️</button>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+        <span>👦 Player</span> | <span>📦 Gift</span> | <span>⭐ Target</span> | <span>🎁 Delivered</span>
+    </div>
+
+    <!-- Win Modal -->
+    <div id="winModal" class="modal">
+        <div class="modal-content">
+            <h2 style="color: #ff6b6b; margin-top: 0;">🎉 Fantastic! 🥳</h2>
+            <p>Aapne stage clear kar liya!</p>
+            <button class="btn" onclick="nextLevel()" style="background: #00b894; box-shadow: 0 4px 0 #00876c;">Next Random Level 🚀</button>
+        </div>
+    </div>
+
+    <script>
+        let currentDifficulty = 'easy';
+        let stageCount = 1;
+        let grid = [];
+        let playerPos = { r: 0, c: 0 };
+        let moves = 0;
+
+        function setDifficulty(diff) {
+            currentDifficulty = diff;
+            stageCount = 1;
+            document.querySelectorAll('.level-selector .btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.innerText.toLowerCase().includes(diff)) btn.classList.add('active');
+            });
+            generateNewLevel();
+        }
+
+        // Random Puzzle Level Generator Algorithm
+        function generateNewLevel() {
+            let rows = 6, cols = 6, boxCount = 1;
+            
+            if (currentDifficulty === 'medium') { rows = 7; cols = 7; boxCount = 2; }
+            if (currentDifficulty === 'hard') { rows = 8; cols = 8; boxCount = 3; }
+
+            // Empty Grid with Wall Border
+            grid = Array.from({ length: rows }, (_, r) =>
+                Array.from({ length: cols }, (_, c) =>
+                    (r === 0 || r === rows - 1 || c === 0 || c === cols - 1) ? 'W' : '_'
+                )
+            );
+
+            // Helper function to get random inner cell
+            const getRandomEmptyCell = () => {
+                let r, c;
+                do {
+                    r = Math.floor(Math.random() * (rows - 2)) + 1;
+                    c = Math.floor(Math.random() * (cols - 2)) + 1;
+                } while (grid[r][c] !== '_');
+                return { r, c };
+            };
+
+            // Place Random Internal Obstacles/Walls
+            const wallCount = Math.floor((rows * cols) * 0.12);
+            for (let i = 0; i < wallCount; i++) {
+                let pos = getRandomEmptyCell();
+                grid[pos.r][pos.c] = 'W';
+            }
+
+            // Place Player
+            let pPos = getRandomEmptyCell();
+            grid[pPos.r][pPos.c] = 'P';
+            playerPos = pPos;
+
+            // Place Targets and Boxes
+            for (let i = 0; i < boxCount; i++) {
+                let tPos = getRandomEmptyCell();
+                grid[tPos.r][tPos.c] = 'T';
+
+                let bPos = getRandomEmptyCell();
+                grid[bPos.r][bPos.c] = 'B';
+            }
+
+            moves = 0;
+            document.getElementById('moveCount').innerText = moves;
+            document.getElementById('stageNum').innerText = `#${stageCount}`;
+            renderBoard();
+        }
+
+        function renderBoard() {
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+            
+            const rows = grid.length;
+            const cols = grid[0].length;
+            board.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const cellVal = grid[r][c];
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+
+                    if (cellVal === 'W') {
+                        cell.classList.add('wall');
+                        cell.innerText = '🧱';
+                    } else if (cellVal === 'P') {
+                        playerPos = { r, c };
+                        cell.innerText = '👦';
+                    } else if (cellVal === 'B') {
+                        cell.innerText = '📦';
+                    } else if (cellVal === 'T') {
+                        cell.classList.add('target');
+                        cell.innerText = '⭐';
+                    } else if (cellVal === 'BT') {
+                        cell.classList.add('target');
+                        cell.innerText = '🎁';
+                    } else if (cellVal === 'PT') {
+                        playerPos = { r, c };
+                        cell.classList.add('target');
+                        cell.innerText = '👦';
+                    }
+
+                    board.appendChild(cell);
+                }
+            }
+        }
+
+        function movePlayer(dir) {
+            let dr = 0, dc = 0;
+            if (dir === 'Up') dr = -1;
+            if (dir === 'Down') dr = 1;
+            if (dir === 'Left') dc = -1;
+            if (dir === 'Right') dc = 1;
+
+            const nr = playerPos.r + dr;
+            const nc = playerPos.c + dc;
+            const targetCell = grid[nr][nc];
+
+            if (targetCell === 'W') return;
+
+            if (targetCell === '_' || targetCell === 'T') {
+                updatePlayerPos(nr, nc);
+                moves++;
+            } else if (targetCell === 'B' || targetCell === 'BT') {
+                const bnr = nr + dr;
+                const bnc = nc + dc;
+                const boxTargetCell = grid[bnr][bnc];
+
+                if (boxTargetCell === '_' || boxTargetCell === 'T') {
+                    grid[bnr][bnc] = (boxTargetCell === 'T') ? 'BT' : 'B';
+                    grid[nr][nc] = (targetCell === 'BT') ? 'T' : '_';
+                    updatePlayerPos(nr, nc);
+                    moves++;
+                }
+            }
+
+            document.getElementById('moveCount').innerText = moves;
+            renderBoard();
+            checkWin();
+        }
+
+        function updatePlayerPos(nr, nc) {
+            const currentCell = grid[playerPos.r][playerPos.c];
+            grid[playerPos.r][playerPos.c] = (currentCell === 'PT') ? 'T' : '_';
+            grid[nr][nc] = (grid[nr][nc] === 'T') ? 'PT' : 'P';
+            playerPos = { r: nr, c: nc };
+        }
+
+        function checkWin() {
+            let unplacedBoxes = 0;
+            for (let r = 0; r < grid.length; r++) {
+                for (let c = 0; c < grid[0].length; c++) {
+                    if (grid[r][c] === 'B') unplacedBoxes++;
+                }
+            }
+
+            if (unplacedBoxes === 0) {
+                setTimeout(() => {
+                    document.getElementById('winModal').style.display = 'flex';
+                }, 200);
+            }
+        }
+
+        function nextLevel() {
+            document.getElementById('winModal').style.display = 'none';
+            stageCount++;
+            generateNewLevel();
+        }
+
+        // Keyboard Controls
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') movePlayer('Up');
+            if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') movePlayer('Down');
+            if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') movePlayer('Left');
+            if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') movePlayer('Right');
+        });
+
+        // Initialize Level
+        generateNewLevel();
+    </script>
+</body>
+</html>

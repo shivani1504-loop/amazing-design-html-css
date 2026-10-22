@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Infographic Process Flow</title>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #e2e5e9;
+            background-image: radial-gradient(#ccc 1px, transparent 1px);
+            background-size: 16px 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            perspective: 1000px; /* 3D Perspective for Cards */
+        }
+
+        /* Card Container */
+        .card {
+            position: relative;
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* Initial Load Animation */
+            opacity: 0;
+            transform: translateY(40px);
+            animation: fadeInUp 0.8s forwards;
+        }
+
+        /* Staggered animation delay for each card */
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.3s; }
+        .card:nth-child(3) { animation-delay: 0.5s; }
+        .card:nth-child(4) { animation-delay: 0.7s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Hover Effects for Cards */
+        .card:hover {
+            transform: translateY(-12px) scale(1.03) rotate(0.5deg);
+            z-index: 10;
+        }
+
+        /* Top White Card Section */
+        .card-top {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 35px 20px 20px 20px;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: box-shadow 0.4s ease;
+        }
+
+        .card:hover .card-top {
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Arrow Point at bottom of White Card */
+        .card-top::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-top: 12px solid #ffffff;
+        }
+
+        /* Top Circular Icon Box */
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            font-size: 20px;
+            border: 3px solid #ffffff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: all 0.4s ease;
+            animation: pulseIcon 3s infinite ease-in-out;
+        }
+
+        /* Floating/Pulse animation on Icon */
+        @keyframes pulseIcon {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-4px); }
+        }
+
+        /* Icon Spin on Card Hover */
+        .card:hover .icon-box i {
+            transform: rotate(360deg);
+            transition: transform 0.6s ease-in-out;
+        }
+
+        /* Top Card Bullet List */
+        .list-item {
+            margin-bottom: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover .list-item {
+            transform: translateX(3px);
+        }
+
+        .list-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .list-title {
+            font-size: 11px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 3px;
+            text-transform: uppercase;
+        }
+
+        .list-title::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover .list-title::before {
+            transform: scale(1.5);
+        }
+
+        .list-desc {
+            font-size: 9px;
+            color: #777777;
+            line-height: 1.3;
+            padding-left: 12px;
+        }
+
+        /* Bottom Colored Card Section */
+        .card-bottom {
+            border-radius: 20px;
+            padding: 30px 15px 15px 15px;
+            margin-top: -20px;
+            position: relative;
+            z-index: 1;
+            color: #ffffff;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            overflow: hidden; /* For shine animation */
+            transition: filter 0.4s ease;
+        }
+
+        /* Pointer Ribbon Arrow on Side */
+        .card-bottom::after {
+            content: '';
+            position: absolute;
+            right: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-left: 15px solid;
+            border-top: 15px solid transparent;
+            border-bottom: 15px solid transparent;
+            transition: right 0.3s ease;
+        }
+
+        .card:hover .card-bottom::after {
+            right: -18px; /* Arrow moves outward on hover */
+        }
+
+        /* Tail Ribbon Fold at Bottom */
+        .card-bottom::before {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 20px;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+        }
+
+        /* Number Formatting & Animation */
+        .number {
+            font-size: 42px;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -2px;
+            transition: transform 0.4s ease, opacity 0.4s ease;
+        }
+
+        .card:hover .number {
+            transform: scale(1.1) translateY(-2px);
+        }
+
+        /* Content Text in Bottom Card */
+        .bottom-content {
+            flex: 1;
+            margin-left: 10px;
+        }
+
+        .bottom-title {
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+
+        .bottom-desc {
+            font-size: 8px;
+            line-height: 1.2;
+            opacity: 0.9;
+        }
+
+        /* Light Shine Glass Effect on Hover */
+        .card-bottom::before {
+            z-index: 2;
+        }
+
+        .shine {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.3),
+                transparent
+            );
+            transform: skewX(-25deg);
+            transition: 0.75s;
+        }
+
+        .card:hover .shine {
+            left: 125%;
+        }
+
+
+        /* ================= COLOR THEMES & HOVER GLOWS ================= */
+
+        /* 01 - BLUE THEME */
+        .card-1 .icon-box { background: linear-gradient(135deg, #00c6ff, #0072ff); }
+        .card-1 .list-title { color: #0088ff; }
+        .card-1 .list-title::before { background-color: #0088ff; }
+        .card-1 .card-bottom { background: linear-gradient(135deg, #00b4db, #0083b0); }
+        .card-1 .card-bottom::after { border-left-color: #0093be; }
+        .card-1 .card-bottom::before { border-top: 12px solid #005f80; }
+        .card-1:hover { filter: drop-shadow(0 15px 20px rgba(0, 180, 219, 0.4)); }
+
+        /* 02 - PURPLE THEME */
+        .card-2 .icon-box { background: linear-gradient(135deg, #a855f7, #6b21a8); }
+        .card-2 .list-title { color: #6b21a8; }
+        .card-2 .list-title::before { background-color: #6b21a8; }
+        .card-2 .card-bottom { background: linear-gradient(135deg, #7e22ce, #581c87); }
+        .card-2 .card-bottom::after { border-left-color: #6b21a8; }
+        .card-2 .card-bottom::before { border-top: 12px solid #3b0764; }
+        .card-2:hover { filter: drop-shadow(0 15px 20px rgba(126, 34, 206, 0.4)); }
+
+        /* 03 - YELLOW / ORANGE THEME */
+        .card-3 .icon-box { background: linear-gradient(135deg, #facc15, #eab308); }
+        .card-3 .list-title { color: #d97706; }
+        .card-3 .list-title::before { background-color: #d97706; }
+        .card-3 .card-bottom { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .card-3 .card-bottom::after { border-left-color: #d97706; }
+        .card-3 .card-bottom::before { border-top: 12px solid #92400e; }
+        .card-3:hover { filter: drop-shadow(0 15px 20px rgba(245, 158, 11, 0.4)); }
+
+        /* 04 - RED / ORANGE THEME */
+        .card-4 .icon-box { background: linear-gradient(135deg, #ff512f, #dd2476); }
+        .card-4 .list-title { color: #ea580c; }
+        .card-4 .list-title::before { background-color: #ea580c; }
+        .card-4 .card-bottom { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .card-4 .card-bottom::after { border-left-color: #dc2626; }
+        .card-4 .card-bottom::before { border-top: 12px solid #991b1b; }
+        .card-4:hover { filter: drop-shadow(0 15px 20px rgba(239, 68, 68, 0.4)); }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- CARD 01 -->
+        <div class="card card-1">
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-regular fa-lightbulb"></i></div>
+                <div class="list-item">
+                    <div class="list-title">Lorem Ipsum</div>
+                    <div class="list-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.</div>
+                </div>
+                <div class="list-item">
+                    <div class="list-title">Lorem Ipsum</div>
+                    <div class="list-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</div>
+                </div>
+                <div class="list-item">
+                    <div class="list-title">Lorem Ipsum</div>
+                    <div class="list-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+                </div>
+            </div>
+            <div class="card-bottom">
+                <div class="shine"></div>
+                <div class="number">01</div>
+                <div class="bottom-content">
+                    <div class="bottom-title">Your Title</div>
+                    <div class="bottom-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 02 -->
+        <div class="card card-2">
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-bullseye"></i></div>
+                <div class="list-item">
+                    <div class="list-title">Lorem Ipsum</div>
+                    <div class="list-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.</div>
+                </div>
+                <div class="list-item">
+                    <div class="list-title">Lorem Ipsum</div>
+                    <div class="list-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</div>
+                </div>
+                <div class="list-item">
+                    <div class="list-title">Lorem Ipsum</div>
+                    <div class="list-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+                </div>
+            </div>
+            <div class="card-bottom">
+                <div class="shine"></div>
+                <div class="number">02</div>
+                <div class="bottom-content">
+                    <div class="bottom-title">Your Title</div>
+                    <div class="bottom-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 03 -->
+        <div class="card card-3">
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-dollar-sign"></i></div>
+                <div class="list-item">
+                    <div class="list-title">Lorem Ipsum</div>
+                    <div class="list-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.</div>
+                </div>
+                <div class="list-item">
+                    <div class="list-title">Lorem Ipsum</div>
+                    <div class="list-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</div>
+                </div>
+                <div class="list-item">
+                    <div class="list-title">Lorem Ipsum</div>
+                    <div class="list-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+                </div>
+            </div>
+            <div class="card-bottom">
+                <div class="shine"></div>
+                <div class="number">03</div>
+                <div class="bottom-content">
+                    <div class="bottom-title">Your Title</div>
+                    <div class="bottom-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 04 -->
+        <div class="card card-4">
+            <div class="card-top">
+                <div class="icon-box"><i class="fa-solid fa-chart-line"></i></div>
+                <div class="list-item">
+                    <div class="list-title">Lorem Ipsum</div>
+                    <div class="list-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.</div>
+                </div>
+                <div class="list-item">
+                    <div class="list-title">Lorem Ipsum</div>
+                    <div class="list-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</div>
+                </div>
+                <div class="list-item">
+                    <div class="list-title">Lorem Ipsum</div>
+                    <div class="list-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+                </div>
+            </div>
+            <div class="card-bottom">
+                <div class="shine"></div>
+                <div class="number">04</div>
+                <div class="bottom-content">
+                    <div class="bottom-title">Your Title</div>
+                    <div class="bottom-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JavaScript For Interactivity -->
+    <script>
+        // 3D Tilt Effect on Mouse Move
+        const cards = document.querySelectorAll('.card');
+
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left; // Mouse X relative to card
+                const y = e.clientY - rect.top;  // Mouse Y relative to card
+
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+
+                const rotateX = ((y - centerY) / centerY) * -8;
+                const rotateY = ((x - centerX) / centerX) * 8;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-10px)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
+            });
+        });
+    </script>
+</body>
+</html>

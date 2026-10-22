@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>✨ Lights Out! - Cutest Puzzle ✨</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+      --card-bg: rgba(255, 255, 255, 0.45);
+      --card-border: rgba(255, 255, 255, 0.7);
+      --text-color: #5a4a6c;
+      --glow-on: #ffd700;
+      --bulb-on-bg: linear-gradient(135deg, #fff275 0%, #ffbe0b 100%);
+      --bulb-off-bg: rgba(255, 255, 255, 0.25);
+      --btn-bg: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+      --btn-hover: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Fredoka', sans-serif;
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-color);
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    .container {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 2px solid var(--card-border);
+      border-radius: 30px;
+      padding: 30px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.6);
+      color: #4a3b5c;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      opacity: 0.85;
+      margin-bottom: 20px;
+    }
+
+    /* Level Selector Pills */
+    .levels {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+
+    .level-btn {
+      background: rgba(255, 255, 255, 0.5);
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      color: var(--text-color);
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 600;
+      padding: 8px 18px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      font-size: 0.9rem;
+    }
+
+    .level-btn:hover {
+      transform: translateY(-3px) scale(1.05);
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    .level-btn.active {
+      background: #ff8fab;
+      color: white;
+      border-color: #ff8fab;
+      box-shadow: 0 8px 15px rgba(255, 143, 171, 0.4);
+    }
+
+    /* Stats bar */
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 18px;
+      padding: 10px;
+      margin-bottom: 20px;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    /* Grid Board */
+    .board-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 25px;
+    }
+
+    .board {
+      display: grid;
+      gap: 12px;
+      padding: 10px;
+    }
+
+    .board.size-3 { grid-template-columns: repeat(3, 75px); }
+    .board.size-4 { grid-template-columns: repeat(4, 65px); }
+    .board.size-5 { grid-template-columns: repeat(5, 55px); }
+
+    .cell {
+      aspect-ratio: 1;
+      border-radius: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      user-select: none;
+    }
+
+    .cell.off {
+      background: var(--bulb-off-bg);
+      box-shadow: inset 0 3px 6px rgba(0,0,0,0.05);
+      transform: scale(0.95);
+    }
+
+    .cell.on {
+      background: var(--bulb-on-bg);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), inset 0 -3px 6px rgba(255, 186, 0, 0.5);
+      transform: scale(1);
+    }
+
+    .board.size-4 .cell { font-size: 1.3rem; }
+    .board.size-5 .cell { font-size: 1.1rem; }
+
+    .cell:hover {
+      transform: scale(1.08);
+    }
+
+    .cell:active {
+      transform: scale(0.92);
+    }
+
+    /* Action Buttons */
+    .actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .action-btn {
+      background: var(--btn-bg);
+      border: none;
+      color: white;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 12px 24px;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(161, 140, 209, 0.4);
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(161, 140, 209, 0.6);
+    }
+
+    .action-btn:active {
+      transform: translateY(1px);
+    }
+
+    /* Win Banner */
+    .win-banner {
+      margin-top: 15px;
+      background: rgba(132, 250, 176, 0.35);
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      border-radius: 16px;
+      padding: 10px;
+      font-weight: 600;
+      color: #2e6b4e;
+      display: none;
+      animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>✨ Lights Out ✨</h1>
+    <p class="subtitle">Sabhi sleepy stars ko sula do (OFF karo)! 🌙</p>
+
+    <!-- Difficulty selector -->
+    <div class="levels">
+      <button class="level-btn active" data-size="3" data-steps="3">Easy (3×3)</button>
+      <button class="level-btn" data-size="4" data-steps="5">Medium (4×4)</button>
+      <button class="level-btn" data-size="5" data-steps="8">Hard (5×5)</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats">
+      <span>🐾 Moves: <strong id="moveCount">0</strong></span>
+      <span>🌟 ON Bulbs: <strong id="onCount">0</strong></span>
+    </div>
+
+    <!-- Puzzle Board -->
+    <div class="board-wrapper">
+      <div id="board" class="board size-3"></div>
+    </div>
+
+    <!-- Win message -->
+    <div id="winBanner" class="win-banner">🎉 Yay! Aapne saari light band kar di! 🌸</div>
+
+    <!-- Controls -->
+    <div class="actions">
+      <button class="action-btn" id="restartBtn">🔄 Reset Board</button>
+    </div>
+  </div>
+
+  <script>
+    let gridSize = 3;
+    let scrambleSteps = 3;
+    let grid = [];
+    let moves = 0;
+    let isGameOver = false;
+
+    const boardEl = document.getElementById('board');
+    const moveCountEl = document.getElementById('moveCount');
+    const onCountEl = document.getElementById('onCount');
+    const winBanner = document.getElementById('winBanner');
+    const levelBtns = document.querySelectorAll('.level-btn');
+    const restartBtn = document.getElementById('restartBtn');
+
+    // Level selector handler
+    levelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        levelBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        gridSize = parseInt(btn.dataset.size);
+        scrambleSteps = parseInt(btn.dataset.steps);
+        initGame();
+      });
+    });
+
+    restartBtn.addEventListener('click', initGame);
+
+    function initGame() {
+      moves = 0;
+      isGameOver = false;
+      winBanner.style.display = 'none';
+      moveCountEl.textContent = moves;
+
+      // Create empty/all-off or solved base
+      grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(false));
+
+      // Solvable scramble: start from all-off and make random valid toggles
+      let randomCells = [];
+      for(let r=0; r<gridSize; r++) {
+        for(let c=0; c<gridSize; c++) {
+          randomCells.push({r, c});
+        }
+      }
+
+      // Shuffle and toggle random spots to guarantee solvability
+      let steps = scrambleSteps + gridSize * 2;
+      for(let i=0; i<steps; i++) {
+        let randIdx = Math.floor(Math.random() * randomCells.length);
+        let cell = randomCells[randIdx];
+        toggleCellLogic(cell.r, cell.c, false);
+      }
+
+      // Ensure at least some lights are on after scramble if accidentally all off
+      if (countOnBulbs() === 0) {
+        toggleCellLogic(0, 0, false);
+      }
+
+      renderBoard();
+      updateStats();
+    }
+
+    function toggleCellLogic(r, c, countMove = true) {
+      const dirs = [[0,0], [1,0], [-1,0], [0,1], [0,-1]];
+      dirs.forEach(([dr, dc]) => {
+        let nr = r + dr;
+        let nc = c + dc;
+        if(nr >= 0 && nr < gridSize && nc >= 0 && nc < gridSize) {
+          grid[nr][nc] = !grid[nr][nc];
+        }
+      });
+      if(countMove) {
+        moves++;
+        moveCountEl.textContent = moves;
+      }
+    }
+
+    function handleCellClick(r, c) {
+      if(isGameOver) return;
+      toggleCellLogic(r, c, true);
+      renderBoard();
+      updateStats();
+      checkWin();
+    }
+
+    function countOnBulbs() {
+      let count = 0;
+      for(let r=0; r<gridSize; r++) {
+        for(let c=0; c<gridSize; c++) {
+          if(grid[r][c]) count++;
+        }
+      }
+      return count;
+    }
+
+    function updateStats() {
+      onCountEl.textContent = countOnBulbs();
+    }
+
+    function checkWin() {
+      if(countOnBulbs() === 0) {
+        isGameOver = true;
+        winBanner.style.display = 'block';
+      }
+    }
+
+    function renderBoard() {
+      boardEl.className = `board size-${gridSize}`;
+      boardEl.innerHTML = '';
+      for(let r=0; r<gridSize; r++) {
+        for(let c=0; c<gridSize; c++) {
+          const cell = document.createElement('div');
+          const isOn = grid[r][c];
+          cell.className = `cell ${isOn ? 'on' : 'off'}`;
+          cell.innerHTML = isOn ? '⭐' : '💤';
+          cell.addEventListener('click', () => handleCellClick(r, c));
+          boardEl.appendChild(cell);
+        }
+      }
+    }
+
+    // Start initial game
+    initGame();
+  </script>
+</body>
+    </html>
